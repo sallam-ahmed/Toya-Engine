@@ -1,0 +1,61 @@
+#pragma once
+#include "Transform.hpp"
+#include "../Graphics/Window.hpp"
+#include "../Math/Math.hpp"
+#include <GLM/glm.hpp>
+
+using namespace Toya::Math;
+namespace Toya
+{
+	namespace Components
+	{
+		enum ProjectionMode
+		{
+			Orthographic = 0,
+			Perspective = 1
+		};
+		class Camera : Transform
+		{
+			Matrix4x4 m_ViewMatrix;
+			Matrix4x4 m_ProjectionMatrix;
+			glm::vec3 m_Up;
+			glm::vec3 m_Right;
+			glm::vec3 m_Direction;
+			GLfloat _aspect;
+			Graphics::Window *_window;
+		public:
+			Camera(Graphics::Window*,glm::vec3*);
+			Camera(Graphics::Window* activeWindow, glm::vec3*  pos, float fov, float near, float far, ProjectionMode projection_mode, const glm::vec3& initialUp, const glm::vec3& initialCenter);
+			~Camera();
+			Transform* GetTransform() const override { return Self; }
+			float fieldOfView;
+			float nearPlane;
+			float farPlane;
+
+			ProjectionMode Projection;
+
+			Math::Matrix4x4 GetWorldToViewMatrix() const;
+			Math::Matrix4x4 GetProjcetionMatrix() const;
+
+			void UpdateViewMatrix();
+			void SetProjection();
+			void Reset(const glm::vec3& position, const glm::vec3 &center, const glm::vec3 &up);
+#pragma region Rotations
+			void Roll(float angle);
+			void Pitch(float angle);
+			void Yaw(float angle);
+#pragma endregion
+#pragma region Translations
+			void Walk(float dist) const;
+			void Strafe(float dist) const;
+			void Fly(float dist) const;
+#pragma endregion
+			void Slide(float stepR, float stepU, float stepD) const;
+		private:
+			glm::vec3 _getLookDirection() const;
+			void _rotateAround(glm::vec3 &vec, float angleDegrees, glm::vec3& axis) const;
+		};
+
+	}
+}
+
