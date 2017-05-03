@@ -5,7 +5,7 @@ namespace Toya
 {
 	namespace Components
 	{
-
+		
 		class RenderableComponent : public Component
 		{
 		public:

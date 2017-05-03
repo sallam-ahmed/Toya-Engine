@@ -12,23 +12,28 @@ namespace Toya
 			static void RenderInitialize()
 			{
 				Lighting::LoadSkyBox();
-			//	Lighting::LightingInit();
+				Lighting::LightingInit();
 			}
-			static void RenderUpdateLoop()//std::vector<Components::Transform*> renderers)
+			static void RenderUpdateLoop()
 			{
-				//Render Sky Box Last for performance
 				Lighting::RenderSkyBox();
 			}
 			static void RenderUpdateLoop(std::vector<Components::Model*> models)
 			{
-			//	auto olShader = ShaderManager::GetActiveShader();
-
-				for (auto mdl : models)
-					mdl->Render();
-
-				//olShader->Enable();
+				for(int i = 0; i < models.size();i++)
+				{
+					models[i]->Render();
+				}
 				Lighting::RenderSkyBox();
+
+				Components::Camera::main->UpdateViewMatrix();
+
+				auto viewMatrix = Components::Camera::main->GetWorldToViewMatrix();
+				auto projectionMatrix = Components::Camera::main->GetProjcetionMatrix();
+				ShaderManager::GetActiveShader()->SetUniformMat4("_viewMatrix", viewMatrix);
+				ShaderManager::GetActiveShader()->SetUniformMat4("_projectionMatrix", projectionMatrix);
 			}
+			
 		};
 	}
 }

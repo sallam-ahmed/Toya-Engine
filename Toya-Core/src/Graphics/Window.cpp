@@ -85,16 +85,20 @@ namespace Toya
 			GLenum error = glGetError();
 			if (error != GL_NO_ERROR)
 			{
-			fprintf(stderr, "Error -> %u\n", error);
+				fprintf(stderr, "Error -> %u\n", error);
+				system("pause");
 			}
 			double currentTime = glfwGetTime(); //get currentTime
 			double deltaTime = (currentTime - m_Time) * 1000; //subtract the previous recorded time (mTime value)* 1000 to convert from nanoseconds to seconds.
 			m_Time = currentTime;
 			CoreDrivers::Time::UpdateTime(deltaTime);
-			////World Update Here
-			//CoreDrivers::Lighting::RenderSkyBox();
-			update_function();
+		
 
+			update_function();
+		/*	glBindVertexArray(vao);
+			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+			glDrawArrays(GL_LINES, 0, 18);*/
+			//Draw Axis
 		}
 
 		void Window::Clear() const
@@ -150,6 +154,34 @@ namespace Toya
 			glfwSetTime(0);
 			glfwSwapInterval(0);
 			Main = this;
+
+			//GLfloat vert[] = {
+			//	0.0f,0.0f,0.0f,		1.0f,0.0f,0.0f,
+			//	5.0f,0.0f,0.0f,		1.0f,0.0f,0.0f,
+
+			//	0.0f,0.0f,0.0f,		0.0f,1.0f,0.0f,
+			//	0.0f,5.0f,0.0f,		0.0f,1.0f,0.0f,
+
+			//	0.0f,0.0f,0.0f,		0.0f,0.0f,1.0f,
+			//	0.0f,0.0f,5.0f,		0.0f,0.0f,1.0f,
+			//};
+
+			//glGenVertexArrays(1, &vao);
+			//
+			//glGenVertexArrays(1, &vao);
+			//glGenBuffers(1, &vbo);
+
+			//glBindVertexArray(vao);
+			//glBindBuffer(GL_ARRAY_BUFFER, vbo);
+			//glBufferData(GL_ARRAY_BUFFER, sizeof(vert) / sizeof(GLfloat), &vert[0], GL_STATIC_DRAW);
+			//glEnableVertexAttribArray(0);
+			//glEnableVertexAttribArray(1);
+			//glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)(0));
+			//glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
+
+			glEnable(GL_CULL_FACE);
+			glCullFace(GL_BACK);
+
 			return true;
 
 		}

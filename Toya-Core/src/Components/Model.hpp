@@ -14,35 +14,82 @@ namespace Toya
 {
 	namespace Components
 	{
-		class Model
+#define DEFAULT_MODEL_VERT_SHADER "Shaders/Default/ModelDefVertShader.glsl"
+#define DEFAULT_MODEL_FRAG_SHADER "Shaders/Default/ModelDefFragShader.glsl"
+		class Model : public Component
 		{
-		public:
+		private:
 			Shader* modelShader;
+		public:
+			Texture2D* modelTexture;
 			Model() = default;
-			Model(GLchar* filePath)
+			Model(GLchar* filePath,bool unloadShader = false)
 			{
-				this->_loadModel(filePath);
-			}
+				if(!unloadShader)
+					modelShader = new Shader(DEFAULT_MODEL_VERT_SHADER, DEFAULT_MODEL_FRAG_SHADER);
 
+				m_UnifyShader = false;
+				Model::_loadModel(filePath);
+			}
 			void Render()
 			{
-				Render(modelShader);
+				if (m_useUnifiedTexture)
+					RenderOne(modelShader, modelTexture);
+				else
+				{
+					Render(modelShader);
+
+				}
+			}
+			void BindShader(Shader* shader)
+			{
+				m_UnifyShader = true;
+				modelShader = shader;
+			}
+			void Render(Texture2D* tex)
+			{
+				RenderOne(modelShader,tex);
 			}
 			void Render(Graphics::Shader* shader)
 			{
-				shader->Enable();
+			   	shader->Enable();
+				shader->SetUniformMat4("_modelMatrix", this->transform->GetModelMatrix());
+				shader->SetUniformMat4("_projectionMatrix", Camera::main->GetProjcetionMatrix());
+			    shader->SetUniformMat4("_viewMatrix", Camera::main->GetWorldToViewMatrix());
+
 				for (auto mesh : meshes)
 					mesh.Draw(shader);
 			}
-		private:
-			std::vector<Texture2D> textures_loaded;
+			void RenderOne(Graphics::Shader* shader, Texture2D* tex = nullptr)
+			{
+				if(!m_UnifyShader)
+					shader->Enable();
+				shader->SetUniformMat4("_modelMatrix", this->transform->GetModelMatrix());
+				shader->SetUniformMat4("_projectionMatrix", Camera::main->GetProjcetionMatrix());
+				shader->SetUniformMat4("_viewMatrix", Camera::main->GetWorldToViewMatrix());
+
+				for (auto mesh : meshes)
+				{
+					mesh.DrawOneTexture(shader,tex);
+				}
+					
+
+			}
+			void BindTexture(Texture2D* texture2_d)
+			{
+				m_useUnifiedTexture = true;
+				this->modelTexture = texture2_d;
+			}
 			std::vector<Mesh> meshes;
+		protected:
+			bool m_UnifyShader = false;
+			bool m_useUnifiedTexture;
+			std::vector<Texture2D> textures_loaded;
 			std::string directory;
-			
 			void _loadModel(std::string path)
 			{
 				Assimp::Importer import;
-				auto scene = import.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs);
+				auto scene = import.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs );
 				if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
 				{
 					fprintf(stderr, "ERROR::ASSIMP:: %s\n", import.GetErrorString());
@@ -57,6 +104,7 @@ namespace Toya
 				for (GLuint i = 0; i < node->mNumMeshes; i++)
 				{
 					auto mesh = scene->mMeshes[node->mMeshes[i]];
+					fprintf(stdout, "Processed Mesh %d \n", i);
 					this->meshes.push_back(this->_processMesh(mesh, scene));
 				}
 				//Process children too
@@ -67,7 +115,6 @@ namespace Toya
 
 				//TODO Preserve Mesh Heirarchy for complex meshes representtation 
 			}
-
 			Mesh _processMesh(aiMesh* mesh, const aiScene* scene) 
 			{
 				std::vector<ComplexVertex> vertices;
@@ -83,7 +130,6 @@ namespace Toya
 					vect3.y = mesh->mVertices[i].y;
 					vect3.z = mesh->mVertices[i].z;
 					vertex.vPosition = vect3;
-					vertices.push_back(vertex);
 					//Normals
 					vect3.x = mesh->mNormals[i].x;
 					vect3.y = mesh->mNormals[i].y;
@@ -99,6 +145,8 @@ namespace Toya
 					}
 					else
 						vertex.vTexCoords = glm::vec2(0.0f, 0.0f);
+
+					vertices.push_back(vertex);
 				}
 				// Process indices
 				for (GLuint i = 0; i < mesh->mNumFaces; i++)
@@ -123,7 +171,6 @@ namespace Toya
 				}
 				return Mesh(vertices, textures,indices);
 			}
-
 			std::vector<Texture2D> _loadMaterialTextures(aiMaterial* mat, aiTextureType type, std::string typeName) 
 			{
 				std::vector<Texture2D> textures;
@@ -143,6 +190,7 @@ namespace Toya
 					}
 					if (!skipTex) {
 						auto texPath = directory + "/" + str.C_Str();
+						fprintf(stdout, "Loading Path: %s\n", texPath.c_str());
 						auto texture = TextureLoader::LoadTexture(texPath, i, true, typeName);
 						texture->path = str;
 						textures.push_back(*texture);

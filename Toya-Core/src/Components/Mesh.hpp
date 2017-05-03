@@ -7,6 +7,7 @@
 #include "Base/RenderableComponent.hpp"
 #include <sstream>
 
+
 #define EXP 0
 namespace Toya
 {
@@ -44,26 +45,49 @@ using namespace Graphics;
 #endif
 			void Draw(Shader *shader)
 			{
+#if 1
+				// Bind
 				GLuint diffuseNr = 1;
 				GLuint specularNr = 1;
+				glEnable(GL_TEXTURE_2D);
 				for (GLuint i = 0; i < this->textures.size(); i++)
 				{
-					//glActiveTexture(GL_TEXTURE0 + i); // Activate proper texture unit before binding
-					// Retrieve texture number (the N in diffuse_textureN)
+					glActiveTexture(GL_TEXTURE0 + i); 
 					std::stringstream ss;
 					std::string number;
 					std::string name = this->textures[i].type;
-					if (name == TEXTURE_DIFFUSE)
-						ss << diffuseNr++; // Transfer GLuint to stream
-					else if (name == TEXTURE_SPECULAR)
-						ss << specularNr++; // Transfer GLuint to stream
+					if (name == "texture_diffuse")
+						ss << diffuseNr++; 
+					else if (name == "texture_specular")
+						ss << specularNr++;
 					number = ss.str();
-					shader->SetUniform1i(("material." + name + number).c_str(), i);
-					textures[i].Bind();
-					//glBindTexture(GL_TEXTURE_2D, this->textures[i].TextureUnit);
+					shader->SetUniform1i((name + number).c_str(), i);
+			//		fprintf(stdout, "Activating texture of %u\n",textures[i].m_TextureId);
+					glBindTexture(GL_TEXTURE_2D, this->textures[i].m_TextureId);
 				}
-				glActiveTexture(GL_TEXTURE0);
-				// Draw mesh
+
+				//shader->SetUniform1f("material.shininess", 16.0f);
+
+				glBindVertexArray(this->VAO);
+				glDrawElements(GL_TRIANGLES, this->indices.size(), GL_UNSIGNED_INT, 0);
+				glBindVertexArray(0);
+
+				// Always good practice to set everything back to defaults once configured.
+				for (GLuint i = 0; i < this->textures.size(); i++)
+				{
+					glActiveTexture(GL_TEXTURE0 + i);
+					glBindTexture(GL_TEXTURE_2D, 0);
+				}
+#endif
+			}
+
+			void DrawOneTexture(Shader * shader,Texture2D *tex)
+			{
+				shader->SetUniform1i("texture_diffuse",0);
+				tex->Bind();
+				
+				//shader->SetUniform1f("material.shininess", 16.0f);
+				
 				glBindVertexArray(this->VAO);
 				glDrawElements(GL_TRIANGLES, this->indices.size(), GL_UNSIGNED_INT, 0);
 				glBindVertexArray(0);

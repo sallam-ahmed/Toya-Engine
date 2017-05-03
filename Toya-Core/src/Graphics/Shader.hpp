@@ -2,6 +2,7 @@
 #include <GLEW/GL/glew.h>
 #include "../Utils/FileUtils.hpp"
 #include "../Math/Math.hpp"
+#include <map>
 
 
 using namespace Toya::Math;
@@ -17,7 +18,7 @@ namespace Toya
 			const char *m_VertexShaderPath, *m_FragShaderPath;
 			GLuint m_ProgramId;
 			static bool m_Initialized;
-			//Shader* self;
+			Shader* self;
 		public:
 			Shader() = default;
 			Shader(const char* vertexShader, const char* fragemntShader);
@@ -41,14 +42,16 @@ namespace Toya
 		private:
 			GLuint _loadShader() const;
 		};
-#if 0
+#if 1
 		class ShaderManager
 		{
-		public:
-			ShaderManager() = default;
+			public:
+			static std::map<GLuint, GLchar*> shaderMap;
+			         ShaderManager() = default;
 			static Shader* m_ActiveShader;
 			inline static void SetActiveShader(Shader* sh)
 			{
+				//fprintf(stdout, "Current Active Shader %s\n", shaderMap[sh->GetProgramId()]);
 				m_ActiveShader = sh;
 			}
 			inline static Shader* GetActiveShader()

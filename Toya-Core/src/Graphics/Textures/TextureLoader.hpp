@@ -30,19 +30,22 @@ namespace Toya
 			{
 				Texture2D* _texture = new Texture2D();
 				_texture->TextureUnit = textureUnit;
-				
 				int width, height, numComponents;
 				unsigned char* data = stbi_load((texturePath).c_str(), &width, &height, &numComponents, TEXTURE_CHANNEL_NUMBER);				if (data == NULL)				{
 					fprintf(stderr, "Unable to load texture: %s\n", texturePath.c_str());
 					return nullptr;
 				}
-				glGenTextures(1, &_texture->m_TextureId);
+				glBindTexture(GL_TEXTURE_2D, 0);
+				glGenTextures(1, &_texture->m_TextureId);
 				glBindTexture(GL_TEXTURE_2D, _texture->m_TextureId);
+				auto bIsTexture = glIsTexture(_texture->m_TextureId);
+				fprintf(stdout, "Texture %s Load Status : %s\n",texturePath.c_str(), bIsTexture == 1 ? "Suc" : "Fail");
 				glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);				glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);				glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);				if(generateMIP)
 					glGenerateMipmap(GL_TEXTURE_2D);
 
 				glBindTexture(GL_TEXTURE_2D, 0);				stbi_image_free(data);
 				_texture->type = tex_type;
+				//system("pause");
 				return _texture;
 			}
 #endif

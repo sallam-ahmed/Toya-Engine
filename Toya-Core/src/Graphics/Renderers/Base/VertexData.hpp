@@ -14,7 +14,6 @@ namespace Toya
 		struct ComplexVertex
 		{
 			glm::vec3 vPosition;
-			//glm::vec4 vColor;
 			glm::vec3 vNormals;
 			glm::vec2 vTexCoords;
 		};

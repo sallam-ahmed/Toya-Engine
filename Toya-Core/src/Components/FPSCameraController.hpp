@@ -40,29 +40,29 @@ namespace Toya
 				if (EnableXMovement)
 				{
 					xOffset *= this->xSenstivity;
-					m_Camera->m_Yaw += xOffset;
+					m_Camera->Yaw += xOffset;
 					if (ConstrainX)
 					{
-						if (m_Camera->m_Pitch > MaxXMovement)
-							m_Camera->m_Pitch = MaxXMovement;
-						if (m_Camera->m_Pitch < MinXMovement)
-							m_Camera->m_Pitch = MinXMovement;
+						if (m_Camera->Pitch > MaxXMovement)
+							m_Camera->Pitch = MaxXMovement;
+						if (m_Camera->Pitch < MinXMovement)
+							m_Camera->Pitch = MinXMovement;
 					}
 				}
 				if (EnableYMovement)
 				{
 					yOffset *= this->ySenstivity;
-					m_Camera->m_Pitch += yOffset;
+					m_Camera->Pitch += yOffset;
 					if (ConstrainY)
 					{
-						if (m_Camera->m_Pitch > MaxYMovement)
-							m_Camera->m_Pitch = MaxYMovement;
-						if (m_Camera->m_Pitch < MinYMovement)
-							m_Camera->m_Pitch = MinYMovement;
+						if (m_Camera->Pitch > MaxYMovement)
+							m_Camera->Pitch = MaxYMovement;
+						if (m_Camera->Pitch < MinYMovement)
+							m_Camera->Pitch = MinYMovement;
 					}
 				}
 				
-				m_Camera->_updateCameraVectors();
+				m_Camera->UpdateCameraVectors();
 			}
 		};
 	}

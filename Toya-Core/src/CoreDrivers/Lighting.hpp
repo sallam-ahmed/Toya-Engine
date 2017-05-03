@@ -53,8 +53,7 @@ namespace Toya
 				SkyBox->TextureId = -1;
 				Graphics::TextureLoader::LoadCubeMapTexture(SkyBox);
 				m_SkyBoxShader = new Graphics::Shader(SKYBOX_VERT_SHADER, SKYBOX_FRAG_SHADER);
-				//fprintf(stdout, "Loaded SHADER SKY");
-				LightingInit();
+			
 			}
 			static inline void LightingInit()
 			{
@@ -112,13 +111,14 @@ namespace Toya
 			}
 			static inline void RenderSkyBox()
 			{
+			//	ShaderManager::GetActiveShader()->Disable();
 				m_SkyBoxShader->Enable();
 				glDepthFunc(GL_LEQUAL);
 				//glDepthMask(GL_FALSE);//Remember to turn depth writing off
 				auto viewMatrixV = Matrix4x4(glm::mat4(glm::mat3(*Components::Camera::main->GetWorldToViewMatrix().GetGlm())));
 				auto projectionMatrixV = Components::Camera::main->GetProjcetionMatrix();
-				m_SkyBoxShader->SetUniformMat4("view", viewMatrixV);
-				m_SkyBoxShader->SetUniformMat4("projection", projectionMatrixV);
+				m_SkyBoxShader->SetUniformMat4("_viewMatrix", viewMatrixV);
+				m_SkyBoxShader->SetUniformMat4("_projectionMatrix", projectionMatrixV);
 				// skybox cube
 				glBindVertexArray(skyboxVAO);
 				glActiveTexture(GL_TEXTURE0);
@@ -126,23 +126,8 @@ namespace Toya
 				glBindTexture(GL_TEXTURE_CUBE_MAP, SkyBox->TextureId);
 				glDrawArrays(GL_TRIANGLES, 0, 36);
 				glBindVertexArray(0);
-			//	glDepthMask(GL_TRUE);
 				glDepthFunc(GL_LESS);
-
-
-				//view = glm::mat4(glm::mat3(camera.GetViewMatrix()));	// Remove any translation component of the view matrix
-				//glUniformMatrix4fv(glGetUniformLocation(skyboxShader.Program, "view"), 1, GL_FALSE, glm::value_ptr(view));
-				//glUniformMatrix4fv(glGetUniformLocation(skyboxShader.Program, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
-				//// skybox cube
-				//glBindVertexArray(skyboxVAO);
-				//glActiveTexture(GL_TEXTURE0);
-				//glUniform1i(glGetUniformLocation(shader.Program, "skybox"), 0);
-				//glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
-				//glDrawArrays(GL_TRIANGLES, 0, 36);
-				//glBindVertexArray(0);
-				//glDepthFunc(GL_LESS); // Set depth function back to default
-
-				
+			//	fprintf(stdout, "RENDER CYCLE:: SkyBox Finished\n");
 			}
 		};
 		Graphics::CubeMap *Lighting::SkyBox;

@@ -31,8 +31,8 @@ namespace Toya
 			{
 				glDeleteTextures(1, &m_TextureId);			
 			}
-		private:
 			GLuint m_TextureId = NULL;
+		private:
 			inline GLint _getTextureUnitGPU() const
 			{
 				return TextureUnit + GL_TEXTURE0;

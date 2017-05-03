@@ -6,6 +6,8 @@
 #include "../../Graphics/Renderers/Base/Renderable2D.hpp"
 #include "../../Graphics/Renderers/Sprite.hpp"
 #include "Component.hpp"
+
+
 using namespace Toya::Math;
 using namespace Toya::Graphics::Renderers;
 namespace Toya
@@ -13,6 +15,16 @@ namespace Toya
 	namespace Components
 	{
 		class GameObject;
+		class Behaviour;
+		class Behaviour : public Component
+		{
+		public:
+			Behaviour() { gameObject = nullptr; enabled = true; }
+			virtual void Start() = 0;
+			virtual void Update() = 0;
+			GameObject* gameObject;
+			bool enabled;
+		};
 		class Transform
 		{
 			glm::mat4 m_TranslationMatrix;
@@ -29,7 +41,14 @@ namespace Toya
 			~Transform();
 			inline Renderable2D* GetRenderer() const { return m_Rendererable; }
 			inline void SetRenderer(Renderable2D *rendererable2D) { m_Rendererable = rendererable2D; }
-			
+			inline Behaviour* Attach(Behaviour* behaviour)
+			{
+				behaviour->gameObject = gameObject;
+				behaviour->transform = this;
+				Behaviours.push_back(behaviour);
+				return behaviour;
+			}
+			std::vector<Behaviour*> Behaviours;
 			GameObject *gameObject;
 			glm::vec3 Position;
 			glm::vec3 Scale;
@@ -54,14 +73,27 @@ namespace Toya
 				}
 				return nullptr;
 			}
+			template <class T >
+			inline T* GetBehaviour()
+			{
+				for (auto c : Behaviours)
+				{
+					//	fprintf(stdout, "1-> %s\n2->%s\n",typeid(c).name(),typeid(T).name());
+					if (dynamic_cast<T*>(c))
+					{
+						return static_cast<T*>(c);
+					}
+				}
+				return nullptr;
+			}
 			Matrix4x4 GetModelMatrix() const;
 
 			virtual Transform* GetTransform()const { return Self; }
 
 		};
-
 		class GameObject
 		{
+			
 		public:
 			GameObject() :name("GameObject"), tag("Untagged"), transform(new Transform())
 			{
@@ -72,7 +104,6 @@ namespace Toya
 			Transform* transform;
 
 		};
-
 		#if 0
 		struct Transform
 		{

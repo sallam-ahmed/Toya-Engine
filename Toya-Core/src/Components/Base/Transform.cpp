@@ -76,7 +76,7 @@ namespace Toya
 
 		void Transform::Rotate(const glm::vec3 axis, float amount)
 		{
-			Rotation = glm::angleAxis(amount, axis);
+			Rotation *= glm::angleAxis(glm::radians(amount), axis);
 		}
 		void Transform::ScaleTransform(const glm::vec3& axis, glm::vec3 amount)
 		{
@@ -87,7 +87,8 @@ namespace Toya
 			glm::mat4 glm_translate = glm::translate(glm::mat4(1.0), Position);
 			glm::mat4 glm_rotate = glm::mat4_cast(Rotation);
 			glm::mat4 glm_scale = glm::scale(glm::mat4(1.0), Scale);
-			return Matrix4x4(glm_rotate * glm_scale * glm_translate);;
+			
+			return Matrix4x4(glm_translate * glm_rotate * glm_scale );;
 		}
 	}
 }

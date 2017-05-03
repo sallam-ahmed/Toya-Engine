@@ -30,6 +30,7 @@ void main()
 {
 
 	vec3 textureColor = texture(texture_diffuse,fs_in.texCoord).rgb;
+/*
 	//Ambient Color
 	vec3 ambient = (ambientLightColor * ambientStrength).xyz;
 	
@@ -51,6 +52,6 @@ void main()
 	vec3 specular = specularStrength * specularity * lightColor.xyz;   
 	vec3 clampedSpec = clamp(specular,0.0f,1.0f);
 	vec3 finalColor = ambient + diffuse + clampedSpec; // + Diff + Spec + Ambient
-	
-	color = textureColor * finalColor ;//mix(textureColor,finalColor,0.05);//,texture(cubeMapSampler,cubeMapTextureDirection);
+	*/
+	color = textureColor * ;// * finalColor ;//mix(textureColor,finalColor,0.05);//,texture(cubeMapSampler,cubeMapTextureDirection);
 }

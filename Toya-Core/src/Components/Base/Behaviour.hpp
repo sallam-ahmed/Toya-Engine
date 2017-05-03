@@ -1,13 +1,17 @@
 #pragma once
+#include "Component.hpp"
+
 namespace Toya
 {
 	namespace Components
 	{
-		class Behaviour
-		{
-		public:
-			Behaviour() = default;
-			virtual ~Behaviour() = 0;
-		};
+
+		//class Behaviour : public Component
+		//{
+		//public:
+		//	Behaviour() {}
+		//	virtual void Start() = 0;
+		//	virtual void Update() = 0;
+		//};
 	}
 }

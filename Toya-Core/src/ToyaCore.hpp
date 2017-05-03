@@ -6,3 +6,5 @@
 #include "Components/ToyaComponents.hpp"
 #include "Utils/ToyaUtils.hpp"
 #include "CoreDrivers/ToyaCoreDrivers.hpp"
+#include "src/Scenes/Scene.hpp"
+#include "src/Behaviours/Behaviours.h"

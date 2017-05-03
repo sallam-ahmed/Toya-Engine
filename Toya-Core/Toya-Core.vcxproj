@@ -127,6 +127,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="src\Behaviours\MazeGenerator.cpp" />
     <ClCompile Include="src\Components\Base\BaseCamera.cpp" />
     <ClCompile Include="src\Graphics\Renderers\BatchRenderer2D.cpp" />
     <ClCompile Include="src\Graphics\Renderers\Simple2DRenderer.cpp" />
@@ -145,6 +146,10 @@
     <ClCompile Include="src\Math\Matrix4x4.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Behaviours\Behaviours.h" />
+    <ClInclude Include="src\Behaviours\MazeGenerator.hpp" />
+    <ClInclude Include="src\Behaviours\MockBehaviour.hpp" />
+    <ClInclude Include="src\CollisionManagment\BoxCollider.hpp" />
     <ClInclude Include="src\Components\Base\BaseCamera.hpp" />
     <ClInclude Include="src\Components\Base\Behaviour.hpp" />
     <ClInclude Include="src\Components\Base\GameObject.hpp" />
@@ -164,6 +169,11 @@
     <ClInclude Include="src\CoreDrivers\Screen.hpp" />
     <ClInclude Include="src\CoreDrivers\Time.hpp" />
     <ClInclude Include="src\CoreDrivers\ToyaCoreDrivers.hpp" />
+    <ClInclude Include="src\GamePlay\Camera\CameraController.hpp" />
+    <ClInclude Include="src\GamePlay\Camera\FPSCamera.hpp" />
+    <ClInclude Include="src\GamePlay\Camera\TPSCamera.hpp" />
+    <ClInclude Include="src\GamePlay\SimpleRoomGenerator.h" />
+    <ClInclude Include="src\GamePlay\PlayerBehaviour.hpp" />
     <ClInclude Include="src\Graphics\Buffers\Buffer.hpp" />
     <ClInclude Include="src\Graphics\Buffers\Buffers.h" />
     <ClInclude Include="src\Graphics\Buffers\IndexBuffer.hpp" />
@@ -186,12 +196,14 @@
     <ClInclude Include="src\Graphics\ToyaGraphics.hpp" />
     <ClInclude Include="src\Graphics\Window.hpp" />
     <ClInclude Include="src\Input\InputManager.hpp" />
+    <ClInclude Include="src\Math\AABB.h" />
     <ClInclude Include="src\Math\Constants.hpp" />
     <ClInclude Include="src\Math\Math.hpp" />
     <ClInclude Include="src\Math\Matrix4x4.hpp" />
     <ClInclude Include="src\Scenes\Scene.hpp" />
     <ClInclude Include="src\ToyaCore.hpp" />
     <ClInclude Include="src\Utils\FileUtils.hpp" />
+    <ClInclude Include="src\Utils\ObjectUtils.hpp" />
     <ClInclude Include="src\Utils\ToyaUtils.hpp" />
   </ItemGroup>
   <ItemGroup>

@@ -1,5 +1,4 @@
-#ifndef INPUT_MANAGER
-#define INPUT_MANGAER
+
 #pragma once
 #include <GLEW/GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -121,5 +120,3 @@ namespace Toya
 		};
 	}
 }
-
-#endif

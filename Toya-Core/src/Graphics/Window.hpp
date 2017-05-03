@@ -16,6 +16,8 @@ namespace Toya
 			GLFWwindow *m_Window;
 			static double m_Time;
 			static void _sizeCallBack(GLFWwindow* window, int width, int height);
+			GLuint vao;
+			GLuint vbo;
 		public:
 			Window(const char* name, int width, int height);
 			Window();

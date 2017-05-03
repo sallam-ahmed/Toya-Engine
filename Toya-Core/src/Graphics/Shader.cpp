@@ -9,14 +9,16 @@ namespace Toya
 	namespace Graphics
 	{
 		bool Shader::m_Initialized = false;
-		//Shader* ShaderManager::m_ActiveShader;
+		std::map<GLuint, GLchar*> ShaderManager::shaderMap;
+		Shader* ShaderManager::m_ActiveShader;
 
 		Shader::Shader(const char* vertexShader, const char* fragemntShader) 
 		:m_VertexShaderPath(vertexShader), m_FragShaderPath(fragemntShader)
 		{
 			m_ProgramId = _loadShader();
-			fprintf(stdout, "Shader Loaded Successfully of %s\n",vertexShader);
-		//	self = this;
+			fprintf(stdout, "Shader Loaded Successfully of %s\n ID = %u\n",vertexShader,m_ProgramId);
+			ShaderManager::shaderMap[m_ProgramId] = const_cast<GLchar*>(vertexShader);
+			self = this;
 		}
 
 		Shader::~Shader()
@@ -26,7 +28,7 @@ namespace Toya
 
 		void Shader::Enable() const
 		{
-		//	ShaderManager::SetActiveShader(self);
+			ShaderManager::SetActiveShader(self);
 			glUseProgram(m_ProgramId);
 		}
 

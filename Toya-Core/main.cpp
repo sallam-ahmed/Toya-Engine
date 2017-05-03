@@ -1,5 +1,10 @@
 #include "src/ToyaCore.hpp"
-#include "src/Components/MeshRenderer.hpp"
+
+#include "src/GamePlay/PlayerBehaviour.hpp"
+#include "src/GamePlay/Camera/TPSCamera.hpp"
+#include "src/GamePlay/Camera/FPSCamera.hpp"
+#include "src/GamePlay/Camera/CameraController.hpp"
+#include "src/GamePlay/SimpleRoomGenerator.h"
 
 using namespace Toya;
 using namespace Graphics;
@@ -17,133 +22,127 @@ using namespace CoreDrivers;
 #define LIGHT_FRAG_SHADER "Shaders/LightShaders/LightEnabledFragmentShader.glsl"
 
 #define BATCH_RENDERER 1
+#define BOX_TEST 0
 
 Shader* default_shader;
 Transform *m;
 glm::vec3*lightPos;
+std::vector<GameObject*> sceneObjects;
+SceneManagement::Scene activeScene;
+
+
+GameObject* CreateObject(char* _name)
+{
+	GameObject *obj = new GameObject();
+	obj->name = _name;
+	SceneManagement::Scene::activeScene->SceneObjects.push_back(obj);
+	return obj;
+}
+GameObject* GetObject(char* _name)
+{
+	for(auto i : SceneManagement::Scene::activeScene->SceneObjects)
+	{
+		if (i->name == _name)
+			return i;
+	}
+	return nullptr;
+}
 
 void _updateFunction(void)
 {
-
-
+/*
 	auto pos = InputManager::GetCursorPosition();	
 	double normalizedX = -1.0 + 2.0 * (double)pos.x / Screen::ScreenWidth;
 	double normalizedY = 1.0 - 2.0 * (double)pos.y / Screen::ScreenHeight;
-	auto p = glm::vec2(normalizedX,-normalizedY);
+	auto p = glm::vec2(normalizedX,-normalizedY);*/
 
 	if (InputManager::GetKey(KeyCode::Esc))
 		Window::Main->Close();
-	if (InputManager::GetKey(KeyCode::E))
-		Camera::main->Fly(.05f * Time::deltaTime);
-	if (InputManager::GetKey(KeyCode::Q))
-		Camera::main->Fly(-(.05f * Time::deltaTime));
-	if (InputManager::GetKey(KeyCode::RightArrow)|| InputManager::GetKey(KeyCode::D))
-		Camera::main->Strafe(-.05f * Time::deltaTime );
-	if (InputManager::GetKey(KeyCode::LeftArrow) || InputManager::GetKey(KeyCode::A))
-		Camera::main->Strafe((.05f * Time::deltaTime));
-	if (InputManager::GetKey(KeyCode::W))
-		Camera::main->Walk((.05f * Time::deltaTime));
-	if (InputManager::GetKey(KeyCode::S))
-		Camera::main->Walk(-(.05f * Time::deltaTime));
-	if (InputManager::GetKey(KeyCode::Alpha1))
-		lightPos->x++;
-	if (InputManager::GetKey(KeyCode::Alpha2))
-		lightPos->y++;
-	if (InputManager::GetKey(KeyCode::Alpha3))
-		lightPos->z++;
-	if (InputManager::GetKey(KeyCode::Alpha4))
-		lightPos->x--;
-	if (InputManager::GetKey(KeyCode::Alpha5))
-		lightPos->y--;
-	if (InputManager::GetKey(KeyCode::Alpha6))
-		lightPos->z--;
-	Camera::main->UpdateViewMatrix();
-	auto fp = Camera::main->transform->GetComponent<FPSCameraController>();
-	fp->ProcessMouseEvent(InputManager::GetDeltaX(), InputManager::GetDeltaY());
-	auto viewMatrix = Camera::main->GetWorldToViewMatrix();
-	auto projectionMatrix = Camera::main->GetProjcetionMatrix();
-	default_shader->Enable();
-	default_shader->SetUniformMat4("_viewMatrix", viewMatrix);
-	default_shader->SetUniformMat4("_projectionMatrix", projectionMatrix);
-}
 
+	if (InputManager::GetKey(KeyCode::P))
+		system("pause");
+}
 void main(void)
 {
 
 	Window* window = new Window("Toya Engine!",500,500);
 	InputManager input_manager = InputManager(window);
-	default_shader = new Shader(LIGHT_VERT_SHADER, LIGHT_FRAG_SHADER);
-	default_shader->Enable();
-	InputManager::SetCursorLockState(LockState::Locked);
+
 	#pragma region Camera Init
-	auto WorldUp = glm::vec3(0, 1, 0);
-	GameObject* MainCameraObject = new GameObject();
-	auto ve = glm::vec3(0,0,10);
-	MainCameraObject->transform->Position = ve;
-	MainCameraObject->transform->AddComponent(new Camera(window, WorldUp));
-	auto fpCamObj = static_cast<FPSCameraController*>(MainCameraObject->transform->AddComponent(new FPSCameraController(Camera::main)));
-	fpCamObj->xSenstivity = 1.0f;
-	fpCamObj->ySenstivity = 1.0f;
-	fpCamObj->ConstrainX = false;
-	fpCamObj->ConstrainY = true;
-	fpCamObj->MaxYMovement = 89.0f;
-	fpCamObj->MinYMovement = -89.0f;
-	fpCamObj->EnableXMovement = fpCamObj->EnableYMovement = true;
-	Camera::main->Projection = ProjectionMode::Perspective;
-	Camera::main->SetProjection();
-	Camera::main->UpdateViewMatrix();
-	auto viewMatrix = Camera::main->GetWorldToViewMatrix();
-	auto projectionMatrix = Camera::main->GetProjcetionMatrix();
-#pragma endregion
 	
-	//RenderManager::RenderInitialize();
+	auto MainCameraObject = CreateObject("Main Camera");
+	MainCameraObject->transform->Position = glm::vec3(2,5,10);
+	MainCameraObject->transform->AddComponent(new Camera(window, activeScene.WorldUp));
+	Camera::main->transform->Attach(new GamePlay::CameraController());
+	
 
-	glClearColor(.2f, .3f, .4f, 1.0f);
-#if 1
+	#pragma endregion
+	
+	#pragma region Player
+	
+	auto playerObject = CreateObject("Player");
+	playerObject->transform->Position = glm::vec3(0,0,0);
+	playerObject->transform->Scale = glm::vec3(1, 1, 1);
+	auto sp = static_cast<Model*>(playerObject->transform->AddComponent(new Model("res/Sphere.obj")));
+	sp->BindTexture(TextureLoader::LoadTexture("res/Sphere2.jpg", 0));
+	
+	playerObject->transform->Attach(new GamePlay::PlayerBehaviour());
+
+	#pragma endregion
+
+	#pragma region Maze Generator
+	auto mazeController = CreateObject("MazGenerator");
+	mazeController->transform->Attach(new GamePlay::SimpleMazeGenerator());
+	#pragma endregion
+
+#if BOX_TEST
+	/*****************************************************************/
 	GLfloat cubeVertices[] = {
-		// Positions         Coords			Normals
-		-0.5f, -0.5f, -0.5f,  0.0f, 0.0f, 0.0f, 0.0f, +1.0f,
-		0.5f, -0.5f, -0.5f,  1.0f, 0.0f,  0.0f, 0.0f, +1.0f,
-		0.5f,  0.5f, -0.5f,  1.0f, 1.0f,  0.0f, 0.0f, +1.0f,
-		0.5f,  0.5f, -0.5f,  1.0f, 1.0f,  0.0f, 0.0f, +1.0f,
-		-0.5f,  0.5f, -0.5f,  0.0f, 1.0f, 0.0f, 0.0f, +1.0f,
-		-0.5f, -0.5f, -0.5f,  0.0f, 0.0f, 0.0f, 0.0f, +1.0f,
+		// Positions          // Texture Coords
+		-0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+		0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
+		0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+		0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+		-0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+		-0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
 
-		-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,  0.0f, 0.0f, -1.0f,
-		0.5f, -0.5f,  0.5f,  1.0f, 0.0f,   0.0f, 0.0f, -1.0f,
-		0.5f,  0.5f,  0.5f,  1.0f, 1.0f,   0.0f, 0.0f, -1.0f,
-		0.5f,  0.5f,  0.5f,  1.0f, 1.0f,   0.0f, 0.0f, -1.0f,
-		-0.5f,  0.5f,  0.5f,  0.0f, 1.0f,  0.0f, 0.0f, -1.0f,
-		-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,  0.0f, 0.0f, -1.0f,
+		-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+		0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+		0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+		0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+		-0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
+		-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
 
-		-0.5f,  0.5f,  0.5f,  1.0f, 0.0f,	+1.0f, 0.0f, 0.0f,
-		-0.5f,  0.5f, -0.5f,  1.0f, 1.0f,	+1.0f, 0.0f, 0.0f,
-		-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,	+1.0f, 0.0f, 0.0f,
-		-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,	+1.0f, 0.0f, 0.0f,
-		-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,	+1.0f, 0.0f, 0.0f,
-		-0.5f,  0.5f,  0.5f,  1.0f, 0.0f,	+1.0f, 0.0f, 0.0f,
+		-0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+		-0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+		-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+		-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+		-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+		-0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
 
-		0.5f,  0.5f,  0.5f,  1.0f, 0.0f,	  -1.0f, 0.0f, 0.0f,
-		0.5f,  0.5f, -0.5f,  1.0f, 1.0f,	  -1.0f, 0.0f, 0.0f,
-		0.5f, -0.5f, -0.5f,  0.0f, 1.0f,	  -1.0f, 0.0f, 0.0f,
-		0.5f, -0.5f, -0.5f,  0.0f, 1.0f,	  -1.0f, 0.0f, 0.0f,
-		0.5f, -0.5f,  0.5f,  0.0f, 0.0f,	  -1.0f, 0.0f, 0.0f,
-		0.5f,  0.5f,  0.5f,  1.0f, 0.0f,	  -1.0f, 0.0f, 0.0f,
+		0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+		0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+		0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+		0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+		0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+		0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
 
-		-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,	    0.0f, +1.0f, 0.0f,
-		0.5f, -0.5f, -0.5f,  1.0f, 1.0f,	    0.0f, +1.0f, 0.0f,
-		0.5f, -0.5f,  0.5f,  1.0f, 0.0f,	   0.0f,  +1.0f, 0.0f,
-		0.5f, -0.5f,  0.5f,  1.0f, 0.0f,	   0.0f,  +1.0f, 0.0f,
-		-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,	   0.0f,  +1.0f, 0.0f,
-		-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,	   0.0f,  +1.0f, 0.0f,
+		-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+		0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
+		0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+		0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+		-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+		-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
 
-		-0.5f,  0.5f, -0.5f,  0.0f, 1.0f,		 0.0f, -1.0f, 0.0f,
-		0.5f,  0.5f, -0.5f,  1.0f, 1.0f,		 0.0f, -1.0f, 0.0f,
-		0.5f,  0.5f,  0.5f,  1.0f, 0.0f,		0.0f,  -1.0f, 0.0f,
-		0.5f,  0.5f,  0.5f,  1.0f, 0.0f,		0.0f,  -1.0f, 0.0f,
-		-0.5f,  0.5f,  0.5f,  0.0f, 0.0f,		 0.0f, -1.0f, 0.0f,
-		-0.5f,  0.5f, -0.5f,  0.0f, 1.0f,		 0.0f, -1.0f, 0.0f
+		-0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+		0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+		0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+		0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+		-0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
+		-0.5f,  0.5f, -0.5f,  0.0f, 1.0f
 	};
+	/*****************************************************************/
+	// Setup cube VAO
 	GLuint cubeVAO, cubeVBO;
 	glGenVertexArrays(1, &cubeVAO);
 	glGenBuffers(1, &cubeVBO);
@@ -151,117 +150,46 @@ void main(void)
 	glBindBuffer(GL_ARRAY_BUFFER, cubeVBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(cubeVertices), &cubeVertices, GL_STATIC_DRAW);
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (GLvoid*)0);
 	glEnableVertexAttribArray(2);
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
-	glEnableVertexAttribArray(3);
-	glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)(5 * sizeof(GLfloat)));
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
 	glBindVertexArray(0);
-	/****************************************************************************************************/
-	Texture2D *boxTex  = TextureLoader::LoadTexture("res/container.jpg", 0, true);
-	Texture2D *boxTex2 = TextureLoader::LoadTexture("res/960.jpg", 1, true);
+	/*****************************************************************/
+	auto boxTex2 = TextureLoader::LoadTexture("res/container2.jpg", 0);
+	auto boxTex = TextureLoader::LoadTexture("res/container.jpg",0);
+	//auto sphereTex = TextureLoader::LoadTexture("res/Sphere.jpg", 0);
+	
+	auto boxShader2 = new Shader(LIGHT_VERT_SHADER, LIGHT_FRAG_SHADER);
+	auto boxShader = new Shader(LIGHT_VERT_SHADER, LIGHT_FRAG_SHADER);
+	
+	//sceneTextures.push_back(sphereTex);
+
 #endif
-	//Shader* skyBoxShader = new Shader(SKYBOX_VERT_SHADER, SKYBOX_FRAG_SHADER);
-	lightPos = new glm::vec3(5, 4, 1);
-	/********************************************************/
-	//auto SkyBox = new Graphics::CubeMap();
-	//SkyBox->texture_faces.push_back(CUBEMAP_RIGHT);
-	//SkyBox->texture_faces.push_back(CUBEMAP_LEFT);
-	//SkyBox->texture_faces.push_back(CUBEMAP_TOP);
-	//SkyBox->texture_faces.push_back(CUBEMAP_BOTTOM);
-	//SkyBox->texture_faces.push_back(CUBEMAP_FRONT);
-	//SkyBox->texture_faces.push_back(CUBEMAP_BACK);
-	//SkyBox->TextureId = -1;
-	//fprintf(stdout, "SkyBox Id Before %u\n", SkyBox->TextureId);
-	//TextureLoader::LoadCubeMapTexture(SkyBox);
-	//fprintf(stdout, "SkyBox Id %u\n", SkyBox->TextureId);
-	/*******************************************************************/
 
-	//GLfloat skyboxVertices[] = {
-	//	// Positions          
-	//	-1.0f, 1.0f, -1.0f,
-	//	-1.0f, -1.0f, -1.0f,
-	//	1.0f, -1.0f, -1.0f,
-	//	1.0f, -1.0f, -1.0f,
-	//	1.0f, 1.0f, -1.0f,
-	//	-1.0f, 1.0f, -1.0f,
 
-	//	-1.0f, -1.0f, 1.0f,
-	//	-1.0f, -1.0f, -1.0f,
-	//	-1.0f, 1.0f, -1.0f,
-	//	-1.0f, 1.0f, -1.0f,
-	//	-1.0f, 1.0f, 1.0f,
-	//	-1.0f, -1.0f, 1.0f,
-
-	//	1.0f, -1.0f, -1.0f,
-	//	1.0f, -1.0f, 1.0f,
-	//	1.0f, 1.0f, 1.0f,
-	//	1.0f, 1.0f, 1.0f,
-	//	1.0f, 1.0f, -1.0f,
-	//	1.0f, -1.0f, -1.0f,
-
-	//	-1.0f, -1.0f, 1.0f,
-	//	-1.0f, 1.0f, 1.0f,
-	//	1.0f, 1.0f, 1.0f,
-	//	1.0f, 1.0f, 1.0f,
-	//	1.0f, -1.0f, 1.0f,
-	//	-1.0f, -1.0f, 1.0f,
-
-	//	-1.0f, 1.0f, -1.0f,
-	//	1.0f, 1.0f, -1.0f,
-	//	1.0f, 1.0f, 1.0f,
-	//	1.0f, 1.0f, 1.0f,
-	//	-1.0f, 1.0f, 1.0f,
-	//	-1.0f, 1.0f, -1.0f,
-
-	//	-1.0f, -1.0f, -1.0f,
-	//	-1.0f, -1.0f, 1.0f,
-	//	1.0f, -1.0f, -1.0f,
-	//	1.0f, -1.0f, -1.0f,
-	//	-1.0f, -1.0f, 1.0f,
-	//	1.0f, -1.0f, 1.0f
-	//};
-	//GLuint skyboxVAO, skyboxVBO;
-	//glGenVertexArrays(1, &skyboxVAO);
-	//glGenBuffers(1, &skyboxVBO);
-	//glBindVertexArray(skyboxVAO);
-	//glBindBuffer(GL_ARRAY_BUFFER, skyboxVBO);
-	//glBufferData(GL_ARRAY_BUFFER, sizeof(skyboxVertices), &skyboxVertices, GL_STATIC_DRAW);
-	//glEnableVertexAttribArray(0);
-	//glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), BUFFER_OFFSET(0));
-	//glBindVertexArray(0);
-	RenderManager::RenderInitialize();;
-
-	//Shader *mockShader = new Shader(DEFAULT_VERT_SHADER, DEFAULT_FRAG_SHADER);
+	activeScene.SceneStart();
 	do
 	{
 		window->Clear();
-		default_shader->Enable();
-#if 1
-		default_shader->SetUniform3f("eyePosition", Camera::main->transform->Position);
-		default_shader->SetUniform4f("lightColor", Color::Green);
-		default_shader->SetUniform3f("lightPosition",*lightPos);
-		default_shader->SetUniformMat4("_modelMatrix", Matrix4x4(glm::translate(glm::vec3(0,0,0))));
-		boxTex->Bind();
-		default_shader->SetUniform1i("texture_diffuse", boxTex->TextureUnit);
+#if BOX_TEST
+		boxShader->Enable();
+		boxShader->SetUniformMat4("_viewMatrix", Camera::main->GetWorldToViewMatrix());
+		boxShader->SetUniformMat4("_projectionMatrix", Camera::main->GetProjcetionMatrix());
 		glBindVertexArray(cubeVAO);
+		/*glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, boxTex->m_TextureId);*/
+		boxTex->Bind();
 		glDrawArrays(GL_TRIANGLES, 0, 36);
-		boxTex->Unbind();
-		boxTex2->Bind();
-		default_shader->SetUniform1i("texture_diffuse", boxTex2->TextureUnit);
-		auto mdx = Matrix4x4(glm::translate(glm::vec3(2, 2, 2)));
-		default_shader->SetUniformMat4("_modelMatrix",mdx);
-		glDrawArrays(GL_TRIANGLES, 0, 36);
-		boxTex2->Unbind();
 		glBindVertexArray(0);
+		boxShader->Disable();
 #endif
-	//	 Draw skybox as last
-		//mockShader->Enable();
-		RenderManager::RenderUpdateLoop();
-		/*********************************************************************************************************/
-		//skyBoxShader->Disable();
+		activeScene.SceneUpdate();
+	
 		window->Update(&_updateFunction);
+
 	} while (!window->Closed());
-	delete MainCameraObject;
+
+	activeScene.SceneEnd();
+
 	glfwTerminate();
 }

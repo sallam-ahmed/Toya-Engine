@@ -23,10 +23,10 @@ namespace Toya
 			_aspect = activeWindow->GetWidth() / static_cast<GLfloat>(activeWindow->GetHeight());
 			m_WorldUp = worldUp;
 			//transform->Position = *pos;
-			m_Yaw = YAW;
-			m_Pitch = PITCH;
+			Yaw = YAW;
+			Pitch = PITCH;
 			fieldOfView = FOV;
-			_updateCameraVectors();
+			UpdateCameraVectors();
 		}
 #if 0
 		Camera::Camera(Graphics::Window* activeWindow, glm::vec3* pos, float fov, float near, float far, ProjectionMode projection_mode, const glm::vec3& initialUp, const glm::vec3& initialCenter)
@@ -53,16 +53,21 @@ namespace Toya
 		{
 			return m_ProjectionMatrix;
 		}
+
+		void Camera::LookAt(Transform* target)
+		{
+		}
+
 		glm::vec3 Camera::_getLookDirection() const
 		{
 			return glm::vec3(-m_Direction);
 		}
-		void Camera::_updateCameraVectors()
+		void Camera::UpdateCameraVectors()
 		{
 			glm::vec3 front;
-			front.x = cos(glm::radians(this->m_Yaw)) * cos(glm::radians(this->m_Pitch));
-			front.y = sin(glm::radians(this->m_Pitch));
-			front.z = sin(glm::radians(this->m_Yaw)) * cos(glm::radians(this->m_Pitch));
+			front.x = cos(glm::radians(this->Yaw)) * cos(glm::radians(this->Pitch));
+			front.y = sin(glm::radians(this->Pitch));
+			front.z = sin(glm::radians(this->Yaw)) * cos(glm::radians(this->Pitch));
 			this->m_Direction = glm::normalize(front);
 			this->m_Right = glm::normalize(glm::cross(this->m_Direction, this->m_WorldUp));
 			this->m_Up= glm::normalize(glm::cross(this->m_Right, this->m_Direction));
@@ -90,8 +95,19 @@ namespace Toya
 #endif
 		void Camera::UpdateViewMatrix()
 		{
-			glm::vec3 center = transform->Position + this->_getLookDirection();
-			m_ViewMatrix = Math::Matrix4x4(glm::lookAt(transform->Position, center, m_Up));
+			if (!overwriteTarget) {
+				glm::vec3 center = transform->Position + this->_getLookDirection();
+				m_ViewMatrix = Math::Matrix4x4(glm::lookAt(transform->Position, center, m_Up));
+			}
+			else
+			{
+				m_Direction = glm::normalize(transform->Position - LookTarget);
+				this->m_Right = glm::normalize(glm::cross(this->m_Direction, this->m_WorldUp));
+				this->m_Up = glm::normalize(glm::cross(this->m_Right, this->m_Direction));
+
+				auto center = transform->Position + this->_getLookDirection();
+				m_ViewMatrix = Matrix4x4(glm::lookAt(transform->Position, center, m_Up));
+			}
 		}
 		void Camera::SetProjection()
 		{
