@@ -19,7 +19,7 @@ namespace Toya
 					auto renderable = m_RenderQueue.back();
 					renderable->GetVAO()->Bind();
 					renderable->GetIBO()->Bind();
-					renderable->GetShader().SetUniformMat4("_modelMatrix", Matrix4x4(glm::translate(renderable->GetPosition())));
+					renderable->GetShader().SetUniformMat4("_modelMatrix", glm::translate(renderable->GetPosition()));
 
 					glDrawElements(GL_TRIANGLES, renderable->GetIBO()->GetCount(), GL_UNSIGNED_SHORT, NULL);
 					renderable->GetIBO()->Unbind();

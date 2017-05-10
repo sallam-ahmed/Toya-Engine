@@ -19,11 +19,13 @@ namespace Toya
 		class FPSCameraController;
 		
 		class FPSCamera;
+		class OrbitCamera;
 		class Camera : public Component
 		{
 	
 			friend class FPSCameraController;
-			const GLfloat YAW = 0.0f;
+			friend class OrbitCamera;
+			const GLfloat YAW = 45.0f;
 			const GLfloat PITCH = 0.0f;
 			const GLfloat SPEED = 3.0f;
 			const GLfloat SENSITIVTY = 0.25f;
@@ -31,8 +33,8 @@ namespace Toya
 			const GLfloat FAR = 100.0f;
 			const GLfloat NEAR = 0.1f;
 
-			Matrix4x4 m_ViewMatrix;
-			Matrix4x4 m_ProjectionMatrix;
+			glm::mat4 m_ViewMatrix;
+			glm::mat4 m_ProjectionMatrix;
 			glm::vec3 m_Up;
 			glm::vec3 m_Right;
 			glm::vec3 m_Direction;
@@ -42,14 +44,13 @@ namespace Toya
 
 		public:
 			Camera(Graphics::Window*,glm::vec3&);
-			//Camera(Graphics::Window* activeWindow, glm::vec3*  pos, float fov, float near, float far, ProjectionMode projection_mode, const glm::vec3& initialUp, const glm::vec3& initialCenter);
 			~Camera();
 			inline glm::vec3 GetLookDirection() const
 			{
 				return m_Direction;
 			}
-			//Transform* GetTransform() const { return transform; }
-			glm::vec3 LookTarget;
+
+			Transform* LookTarget;
 			bool overwriteTarget;
 
 			float fieldOfView;
@@ -61,8 +62,8 @@ namespace Toya
 			GLfloat	  Yaw;
 			GLfloat	  Pitch;
 
-			Math::Matrix4x4 GetWorldToViewMatrix() const;
-			Math::Matrix4x4 GetProjcetionMatrix() const;
+			glm::mat4* GetWorldToViewMatrix() ;
+			glm::mat4* GetProjcetionMatrix() ;
 
 			void LookAt(Transform* target);
 			void UpdateViewMatrix();

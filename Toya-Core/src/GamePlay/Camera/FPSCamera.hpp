@@ -61,6 +61,10 @@ namespace GamePlay
 			if (InputManager::GetKey(KeyCode::LeftArrow))
 				Camera::main->Strafe((.05f * Time::deltaTime));
 		}
+		inline void OnEnable() override{
+			Camera::main->overwriteTarget = false;
+			fprintf(stdout, "Enabled called");
+		}
 		void ProcessMouseEvent(GLfloat xOffset, GLfloat yOffset) const
 		{
 			if (EnableXMovement)

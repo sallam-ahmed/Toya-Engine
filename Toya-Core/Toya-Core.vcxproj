@@ -73,8 +73,8 @@
     <LibraryPath>$(SolutionDir)Dependencies\GLEW\lib;$(SolutionDir)Dependencies\GLFW\lib-vc2015;$(SolutionDir)Dependencies\ASSIMB\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>$(SolutionDir)Dependencies\GLM\;$(SolutionDir)Dependencies\GLEW\include;$(SolutionDir)Dependencies\GLFW\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)Dependencies\GLEW\lib;$(SolutionDir)Dependencies\GLFW\lib-vc2015;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)Dependencies\GLM\;$(SolutionDir)Dependencies\GLEW\include;$(SolutionDir)Dependencies\GLFW\include;$(SolutionDir)Dependencies\ASSIMB\include;$(SolutionDir)Dependencies\STB_IMAGE\;$(SolutionDir)Dependencies\FREETYPE\include;$(SolutionDir)Dependencies\IRRKLANG\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)Dependencies\GLEW\lib;$(SolutionDir)Dependencies\GLFW\lib-vc2015;$(SolutionDir)Dependencies\ASSIMB\lib;$(SolutionDir)Dependencies\FREETYPE\lib;$(SolutionDir)Dependencies\IRRKLANG\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -109,7 +109,7 @@
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>glew32s.lib;glfw3.lib;assimp.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>glew32s.lib;glfw3.lib;opengl32.lib;assimp.lib;freetype.lib;irrKlang.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -128,7 +128,9 @@
   <ItemGroup>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="src\Behaviours\MazeGenerator.cpp" />
+    <ClCompile Include="src\CollisionManagment\CollisionManager.cpp" />
     <ClCompile Include="src\Components\Base\BaseCamera.cpp" />
+    <ClCompile Include="src\CoreDrivers\AudioSource.cpp" />
     <ClCompile Include="src\Graphics\Renderers\BatchRenderer2D.cpp" />
     <ClCompile Include="src\Graphics\Renderers\Simple2DRenderer.cpp" />
     <ClCompile Include="src\CoreDrivers\Screen.cpp" />
@@ -140,7 +142,9 @@
     <ClCompile Include="src\Graphics\Buffers\VertexArray.cpp" />
     <ClCompile Include="src\Graphics\Renderers\Sprite.cpp" />
     <ClCompile Include="src\Graphics\Renderers\StaticSprite.cpp" />
+    <ClCompile Include="src\Graphics\Renderers\TextRenderer.cpp" />
     <ClCompile Include="src\Graphics\Shader.cpp" />
+    <ClCompile Include="src\Graphics\Textures\TextureLoader.cpp" />
     <ClCompile Include="src\Graphics\Window.cpp" />
     <ClCompile Include="src\Input\InputManager.cpp" />
     <ClCompile Include="src\Math\Matrix4x4.cpp" />
@@ -149,11 +153,12 @@
     <ClInclude Include="src\Behaviours\Behaviours.h" />
     <ClInclude Include="src\Behaviours\MazeGenerator.hpp" />
     <ClInclude Include="src\Behaviours\MockBehaviour.hpp" />
-    <ClInclude Include="src\CollisionManagment\BoxCollider.hpp" />
+    <ClInclude Include="src\CollisionManagment\CollisionManager.hpp" />
     <ClInclude Include="src\Components\Base\BaseCamera.hpp" />
     <ClInclude Include="src\Components\Base\Behaviour.hpp" />
     <ClInclude Include="src\Components\Base\GameObject.hpp" />
     <ClInclude Include="src\Components\Base\RenderableComponent.hpp" />
+    <ClInclude Include="src\Components\BoxCollider.hpp" />
     <ClInclude Include="src\Components\Camera.hpp" />
     <ClInclude Include="src\Components\Base\Component.hpp" />
     <ClInclude Include="src\Components\FPSCameraController.hpp" />
@@ -163,6 +168,8 @@
     <ClInclude Include="src\Components\ToyaComponents.hpp" />
     <ClInclude Include="src\Components\Base\Transform.hpp" />
     <ClInclude Include="src\CoreDrivers\AssetManager.hpp" />
+    <ClInclude Include="src\CoreDrivers\AudioSource.hpp" />
+    <ClInclude Include="src\CoreDrivers\Base\IManager.hpp" />
     <ClInclude Include="src\CoreDrivers\Color.hpp" />
     <ClInclude Include="src\CoreDrivers\Lighting.hpp" />
     <ClInclude Include="src\CoreDrivers\RenderDriver.hpp" />
@@ -171,16 +178,18 @@
     <ClInclude Include="src\CoreDrivers\ToyaCoreDrivers.hpp" />
     <ClInclude Include="src\GamePlay\Camera\CameraController.hpp" />
     <ClInclude Include="src\GamePlay\Camera\FPSCamera.hpp" />
+    <ClInclude Include="src\GamePlay\Camera\OrbitCamera.hpp" />
     <ClInclude Include="src\GamePlay\Camera\TPSCamera.hpp" />
+    <ClInclude Include="src\GamePlay\DirectionalLight.hpp" />
+    <ClInclude Include="src\GamePlay\Light.hpp" />
+    <ClInclude Include="src\GamePlay\PacPoint.hpp" />
+    <ClInclude Include="src\GamePlay\PointLight.hpp" />
     <ClInclude Include="src\GamePlay\SimpleRoomGenerator.h" />
     <ClInclude Include="src\GamePlay\PlayerBehaviour.hpp" />
     <ClInclude Include="src\Graphics\Buffers\Buffer.hpp" />
     <ClInclude Include="src\Graphics\Buffers\Buffers.h" />
     <ClInclude Include="src\Graphics\Buffers\IndexBuffer.hpp" />
     <ClInclude Include="src\Graphics\Buffers\VertexArray.hpp" />
-    <ClInclude Include="src\Graphics\Lighting\DirectionalLight.hpp" />
-    <ClInclude Include="src\Graphics\Lighting\Light.hpp" />
-    <ClInclude Include="src\Graphics\Lighting\Lighting.hpp" />
     <ClInclude Include="src\Graphics\Renderers\Base\Renderable2D.hpp" />
     <ClInclude Include="src\Graphics\Renderers\Base\Renderer2D.hpp" />
     <ClInclude Include="src\Graphics\Renderers\Base\VertexData.hpp" />
@@ -188,6 +197,7 @@
     <ClInclude Include="src\Graphics\Renderers\Material.hpp" />
     <ClInclude Include="src\Graphics\Renderers\Sprite.hpp" />
     <ClInclude Include="src\Graphics\Renderers\StaticSprite.hpp" />
+    <ClInclude Include="src\Graphics\Renderers\TextRenderer.hpp" />
     <ClInclude Include="src\Graphics\Shader.hpp" />
     <ClInclude Include="src\Graphics\Renderers\Simple2DRenderer.hpp" />
     <ClInclude Include="src\Graphics\Shaders\ShaderFile.hpp" />
@@ -210,6 +220,8 @@
     <None Include="Shaders\Default\FragmentShader.glsl" />
     <None Include="Shaders\Default\ModelDefFragShader.glsl" />
     <None Include="Shaders\Default\ModelDefVertShader.glsl" />
+    <None Include="Shaders\Default\TextFragShader.glsl" />
+    <None Include="Shaders\Default\TextVertShader.glsl" />
     <None Include="Shaders\LightShaders\LightEnabledFragmentShader.glsl" />
     <None Include="Shaders\LightShaders\LightEnabledVertexShader.glsl" />
     <None Include="Shaders\MaterialShader\FragementShader.glsl" />

@@ -30,7 +30,7 @@ void main()
 {
 
 	vec3 textureColor = texture(texture_diffuse,fs_in.texCoord).rgb;
-/*
+
 	//Ambient Color
 	vec3 ambient = (ambientLightColor * ambientStrength).xyz;
 	

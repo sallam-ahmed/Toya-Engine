@@ -8,13 +8,18 @@ namespace Toya
 		{
 			
 		public:
-			static glm::vec4 Red	;
-			static glm::vec4 Green	;
-			static glm::vec4 Blue	;
-			static glm::vec4 Pink;
+			static Color Red	;
+			static Color Green	;
+			static Color Blue	;
+			static Color Pink;
 
 			float r, g, b, a;
 			glm::vec4 glm_color = glm::vec4(1, 0, 1, 1);
+			Color()
+			{
+				r = g = b = a = 1.0f;
+				glm_color = glm::vec4(r, g, b, a);
+			}
 			Color(float r,float g,float b,float a)
 			{
 				this->r = r;
@@ -23,10 +28,23 @@ namespace Toya
 				this->a = a;
 				glm_color = glm::vec4(r, g, b, a);
 			}
+			Color(glm::vec4 col)
+			{
+				r = col.r;
+				g = col.g;
+				b = col.b;
+				a = col.a;
+				glm_color = glm::vec4(col);
+			}
+			glm::vec4 *GetGlm() 
+			{
+				glm_color = glm::vec4(r, g, b, a);
+				return &glm_color;
+			}
 		};
-		glm::vec4 Color::Pink	=	glm::vec4(.5f, 0, 0, 1);
-		glm::vec4 Color::Red	=	glm::vec4(1, 0, 0, 1);
-		glm::vec4 Color::Green	=	glm::vec4(0, 1, 0, 1);
-		glm::vec4 Color::Blue	=	glm::vec4(0, 0, 1, 1);
+		Color Color::Pink   = Color(glm::vec4(.5f, 0, 0, 1));
+		Color Color::Red	= Color(glm::vec4(1, 0, 0, 1));
+		Color Color::Green	= Color(glm::vec4(0, 1, 0, 1));
+		Color Color::Blue	= Color(glm::vec4(0, 0, 1, 1));
 	}
 }

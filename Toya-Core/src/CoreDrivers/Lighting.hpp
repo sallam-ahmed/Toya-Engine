@@ -3,57 +3,98 @@
 #include "Color.hpp"
 #include <vector>
 #include "../Graphics/Textures/TextureLoader.hpp"
+#include "../GamePlay/DirectionalLight.hpp"
+#include "../GamePlay/Light.hpp"
+#include "Base/IManager.hpp"
+
 
 namespace Toya
 {
 	namespace CoreDrivers
 	{
+#if 0
 #define CUBEMAP_FRONT "res/SkyBox/front.tga"
 #define CUBEMAP_BACK "res/SkyBox/back.tga"
 #define CUBEMAP_TOP "res/SkyBox/top.tga"
 
 #define CUBEMAP_BOTTOM "res/SkyBox/bottom.tga"
-#define CUBEMAP_LEFT "res/SkyBox/left.tga"
-#define CUBEMAP_RIGHT "res/SkyBox/right.tga"
+#define CUBEMAP_LEFT "res/SkyBox/right.tga"
+#define CUBEMAP_RIGHT "res/SkyBox/left.tga"
+
+#endif
+
+#define CUBEMAP_FRONT "res/SkyBox/DeepSpace/front.png"
+#define CUBEMAP_BACK "res/SkyBox/DeepSpace/back.png"
+
+#define CUBEMAP_TOP "res/SkyBox/DeepSpace/top.png"
+#define CUBEMAP_BOTTOM "res/SkyBox/DeepSpace/bottom.png"
+
+#define CUBEMAP_LEFT "res/SkyBox/DeepSpace/left.png"
+#define CUBEMAP_RIGHT "res/SkyBox/DeepSpace/right.png"
+
 
 #define SKYBOX_VERT_SHADER "Shaders/SkyBox/SkyBoxVertShader.glsl"
 #define SKYBOX_FRAG_SHADER "Shaders/SkyBox/SkyBoxFragShader.glsl"
 
-		class Lighting
+		class Lighting 
 		{
 			static float m_AmbientIntensityMultiplier;
-			static glm::vec4 m_AmbientColor;
 			static Graphics::Shader *m_SkyBoxShader;
 			
 			static GLuint skyboxVAO, skyboxVBO;
 			
 			static GLfloat *skyboxVertices;
+			static int _lightCount;
+			static GamePlay::DirectionalLight* m_DirectionalLight;
+			static std::vector<GamePlay::Light*> sceneLights;
 		public:
 			static Graphics::CubeMap* SkyBox;
+			static Color AmbientColor;
+
 			Lighting()
 			{
 				
+				_lightCount = 0;
 				m_AmbientIntensityMultiplier = 1.0f;
-				m_AmbientColor = Color::Red;
+				AmbientColor = Color::Red;
 			
 			}
+
+			static void RegisterLight(GamePlay::Light* point_light)
+			{
+				sceneLights.push_back(point_light);
+			}
+
+			static void RegisterDirectionalLight(GamePlay::DirectionalLight* light)
+			{
+				m_DirectionalLight = light;
+			}
+			static int GetNextLightIndex()
+			{
+				return _lightCount++;
+			}
+
 			static inline void SetAmbientColor(const glm::vec4& ambientColor) 
 			{
-				m_AmbientColor = ambientColor;
+				AmbientColor = ambientColor;
 			}
 			static inline void LoadSkyBox()
 			{
 				SkyBox = new Graphics::CubeMap();
 				SkyBox->texture_faces.push_back(CUBEMAP_RIGHT);
 				SkyBox->texture_faces.push_back(CUBEMAP_LEFT);
+				
 				SkyBox->texture_faces.push_back(CUBEMAP_TOP);
 				SkyBox->texture_faces.push_back(CUBEMAP_BOTTOM);
+
 				SkyBox->texture_faces.push_back(CUBEMAP_FRONT);
 				SkyBox->texture_faces.push_back(CUBEMAP_BACK);
+				
 				SkyBox->TextureId = -1;
+				
 				Graphics::TextureLoader::LoadCubeMapTexture(SkyBox);
-				m_SkyBoxShader = new Graphics::Shader(SKYBOX_VERT_SHADER, SKYBOX_FRAG_SHADER);
-			
+				
+				m_SkyBoxShader = ShaderManager::LoadShader(SKYBOX_VERT_SHADER, SKYBOX_FRAG_SHADER);
 			}
 			static inline void LightingInit()
 			{
@@ -108,6 +149,8 @@ namespace Toya
 				glBufferData(GL_ARRAY_BUFFER, sizeof(skyboxVertices), &skyboxVertices, GL_STATIC_DRAW);
 				glEnableVertexAttribArray(0);
 				glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*)0);
+
+
 			}
 			static inline void RenderSkyBox()
 			{
@@ -115,8 +158,8 @@ namespace Toya
 				m_SkyBoxShader->Enable();
 				glDepthFunc(GL_LEQUAL);
 				//glDepthMask(GL_FALSE);//Remember to turn depth writing off
-				auto viewMatrixV = Matrix4x4(glm::mat4(glm::mat3(*Components::Camera::main->GetWorldToViewMatrix().GetGlm())));
-				auto projectionMatrixV = Components::Camera::main->GetProjcetionMatrix();
+				auto viewMatrixV = glm::mat4(glm::mat3(*Components::Camera::main->GetWorldToViewMatrix()));
+				auto projectionMatrixV = *Components::Camera::main->GetProjcetionMatrix();
 				m_SkyBoxShader->SetUniformMat4("_viewMatrix", viewMatrixV);
 				m_SkyBoxShader->SetUniformMat4("_projectionMatrix", projectionMatrixV);
 				// skybox cube
@@ -129,10 +172,25 @@ namespace Toya
 				glDepthFunc(GL_LESS);
 			//	fprintf(stdout, "RENDER CYCLE:: SkyBox Finished\n");
 			}
+			static inline void RenderLights()
+			{
+				ShaderManager::GetActiveShader()->SetUniform1i("LightCount", sceneLights.size());
+				ShaderManager::GetActiveShader()->SetUniform4f("ambientColor",*(AmbientColor.GetGlm()));
+				ShaderManager::GetActiveShader()->SetUniform3f("viewPos", Components::Camera::main->transform->Position);
+				m_DirectionalLight->UpdateLoop();
+				for (auto i = 0; i < sceneLights.size(); i++)
+				{
+					sceneLights[i]->UpdateLoop();
+				}
+			}
 		};
 		Graphics::CubeMap *Lighting::SkyBox;
 		GLuint Lighting::skyboxVAO;
 		GLuint Lighting::skyboxVBO;
+		int Lighting::_lightCount = 0;
+		Color Lighting::AmbientColor = Color(.3f,.3f,.3f,1.0f);
+		GamePlay::DirectionalLight* Lighting::m_DirectionalLight;
 		Graphics::Shader *Lighting::m_SkyBoxShader;
+		std::vector<GamePlay::Light*> Lighting::sceneLights;
 	}
 }

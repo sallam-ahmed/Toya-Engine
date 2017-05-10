@@ -9,6 +9,7 @@
 
 
 #define EXP 0
+#define BUFFER_OFFSET(i) (GLvoid*)(i)
 namespace Toya
 {
 using namespace Graphics;
@@ -83,7 +84,9 @@ using namespace Graphics;
 
 			void DrawOneTexture(Shader * shader,Texture2D *tex)
 			{
-				shader->SetUniform1i("texture_diffuse",0);
+				shader->SetUniform1i("material.diffuse",0);
+				//TODO Add Specular Map
+				shader->SetUniform1f("material.shininess", 13.0f);
 				tex->Bind();
 				
 				//shader->SetUniform1f("material.shininess", 16.0f);

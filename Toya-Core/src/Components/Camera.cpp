@@ -22,36 +22,22 @@ namespace Toya
 			_window = activeWindow;
 			_aspect = activeWindow->GetWidth() / static_cast<GLfloat>(activeWindow->GetHeight());
 			m_WorldUp = worldUp;
-			//transform->Position = *pos;
 			Yaw = YAW;
 			Pitch = PITCH;
 			fieldOfView = FOV;
 			UpdateCameraVectors();
 		}
-#if 0
-		Camera::Camera(Graphics::Window* activeWindow, glm::vec3* pos, float fov, float near, float far, ProjectionMode projection_mode, const glm::vec3& initialUp, const glm::vec3& initialCenter)
-		{
-			fieldOfView = fov;
-			nearPlane = near;
-			farPlane = far;
-			Projection = projection_mode;
-			_window = activeWindow;
-			_aspect = activeWindow->GetWidth() / static_cast<GLfloat>(activeWindow->GetHeight());
-			m_Up = initialUp;
-			this->Reset(*pos, initialCenter, m_Up);
-		}
-#endif
 		Camera::~Camera()
 		{
 		}
 
-		Math::Matrix4x4 Camera::GetWorldToViewMatrix() const
+		glm::mat4* Camera::GetWorldToViewMatrix() 
 		{
-			return m_ViewMatrix;
+			return &m_ViewMatrix;
 		}
-		Math::Matrix4x4 Camera::GetProjcetionMatrix() const
+		glm::mat4* Camera::GetProjcetionMatrix() 
 		{
-			return m_ProjectionMatrix;
+			return &m_ProjectionMatrix;
 		}
 
 		void Camera::LookAt(Transform* target)
@@ -65,48 +51,35 @@ namespace Toya
 		void Camera::UpdateCameraVectors()
 		{
 			glm::vec3 front;
+
 			front.x = cos(glm::radians(this->Yaw)) * cos(glm::radians(this->Pitch));
 			front.y = sin(glm::radians(this->Pitch));
 			front.z = sin(glm::radians(this->Yaw)) * cos(glm::radians(this->Pitch));
+
 			this->m_Direction = glm::normalize(front);
 			this->m_Right = glm::normalize(glm::cross(this->m_Direction, this->m_WorldUp));
 			this->m_Up= glm::normalize(glm::cross(this->m_Right, this->m_Direction));
-		}
-#if 0
-		void Camera::Reset(const glm::vec3& m_Position, const glm::vec3& center, const glm::vec3& up)
-		{
-			//fprintf(stdout, "UP1 -> %f,%f,%f", m_Up.x, m_Up.y, m_Up.z);
-			this->Self->Position = m_Position;
-			m_Direction = m_Position - center;
-			m_Right = glm::cross(m_Up, m_Direction);
-			m_Up = glm::cross(m_Direction, m_Right);
-			//fprintf(stdout, "UP2 -> %f,%f,%f", m_Up.x, m_Up.y, m_Up.z);
-			//Normalizing
 
-			auto upNorm = glm::normalize(m_Up);
-			m_Up = glm::vec3(upNorm);
-			//fprintf(stdout, "UP3 -> %f,%f,%f", m_Up.x, m_Up.y, m_Up.z);
-			auto rightNorm = glm::normalize(m_Right);
-			m_Right = glm::vec3(rightNorm);
-			auto dirNorm = glm::normalize(m_Direction);
-			m_Direction = glm::vec3(dirNorm);
-			UpdateViewMatrix();
 		}
-#endif
 		void Camera::UpdateViewMatrix()
 		{
 			if (!overwriteTarget) {
 				glm::vec3 center = transform->Position + this->_getLookDirection();
-				m_ViewMatrix = Math::Matrix4x4(glm::lookAt(transform->Position, center, m_Up));
+				m_ViewMatrix = glm::lookAt(transform->Position, center, m_Up);
 			}
 			else
-			{
-				m_Direction = glm::normalize(transform->Position - LookTarget);
+			{				
+				glm::vec3 front;
+				front.x = cos(glm::radians(this->Yaw)) * cos(glm::radians(this->Pitch));
+				front.y = sin(glm::radians(this->Pitch));
+				front.z = sin(glm::radians(this->Yaw)) * cos(glm::radians(this->Pitch));
+
+				this->m_Direction = glm::normalize(front);
+
 				this->m_Right = glm::normalize(glm::cross(this->m_Direction, this->m_WorldUp));
 				this->m_Up = glm::normalize(glm::cross(this->m_Right, this->m_Direction));
 
-				auto center = transform->Position + this->_getLookDirection();
-				m_ViewMatrix = Matrix4x4(glm::lookAt(transform->Position, center, m_Up));
+				m_ViewMatrix = glm::lookAt(transform->Position, LookTarget->Position, m_Up);
 			}
 		}
 		void Camera::SetProjection()
@@ -114,13 +87,13 @@ namespace Toya
 			switch (Projection)
 			{
 			case Orthographic:
-				m_ProjectionMatrix = Matrix4x4(glm::ortho(0.0f, CoreDrivers::Screen::ScreenWidth, CoreDrivers::Screen::ScreenHeight, 0.0f, nearPlane, farPlane));
+				m_ProjectionMatrix = glm::ortho(0.0f, CoreDrivers::Screen::ScreenWidth, CoreDrivers::Screen::ScreenHeight, 0.0f, nearPlane, farPlane);
 				break;
 			case Perspective:
 				//fprintf(stdout, "Setting projection, %f, %f, %f, %f, %f\n", fieldOfView, CoreDrivers::Screen::ScreenWidth, CoreDrivers::Screen::ScreenHeight, nearPlane, farPlane);
 				if (CoreDrivers::Screen::ScreenWidth != 0)
 				{
-					m_ProjectionMatrix = Matrix4x4(glm::perspective(glm::radians(fieldOfView), CoreDrivers::Screen::ScreenWidth / static_cast<GLfloat>(CoreDrivers::Screen::ScreenHeight), nearPlane, farPlane));
+					m_ProjectionMatrix = glm::perspective(glm::radians(fieldOfView), CoreDrivers::Screen::ScreenWidth / static_cast<GLfloat>(CoreDrivers::Screen::ScreenHeight), nearPlane, farPlane);
 				}
 				break;
 			default: ;
@@ -136,29 +109,6 @@ namespace Toya
 				Self->Translate(m_Up, stepU);
 				Self->Translate(m_Direction, stepD);*/
 		}
-#if 0
-		void Camera::Yaw(float angleDegrees)
-		{
-
-			m_Yaw += angleDegrees;
-			m_Direction = glm::vec3(glm::rotate(m_Direction, glm::radians(angleDegrees), m_Up));
-			m_Right = glm::vec3(glm::rotate(m_Right, glm::radians(angleDegrees), m_Up));
-		}
-
-
-		void Camera::Pitch(float angleDegrees)
-		{
-			m_Up = glm::vec3(glm::rotate(m_Up, glm::radians(angleDegrees), m_Right));
-			m_Direction = glm::vec3(glm::rotate(m_Direction, glm::radians(angleDegrees), m_Right));
-		}
-
-		void Camera::Roll(float angleDegrees)
-
-		{
-			m_Right = glm::vec3(glm::rotate(m_Right, glm::radians(angleDegrees), m_Direction));
-			m_Up = glm::vec3(glm::rotate(m_Up, glm::radians(angleDegrees), m_Direction));
-		}
-#endif
 		void Camera::Walk(float dist)
 
 		{

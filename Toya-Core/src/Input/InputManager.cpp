@@ -21,6 +21,7 @@ namespace Toya
 		double InputManager::m_scrollYOffset;
 		Graphics::Window* InputManager::m_Window;
 
+		int InputManager::m_lastKeyReleased;
 		double InputManager::m_mouseLastX;
 		 double InputManager::m_mouseLastY;
 		InputManager::~InputManager()
@@ -112,52 +113,77 @@ namespace Toya
 		/*CALL BACKS*/
 		void InputManager::__keyCallBack(GLFWwindow* window, int key, int scanCode, int action, int mods)
 		{
-			m_KeyFlags[key] = action == GLFW_PRESS;
-			m_KeyReleaseFlags[key] = action == GLFW_RELEASE;
-			m_KeyDownFlags[key] = action == GLFW_REPEAT;
+			switch(action)
+			{
 
+			case GLFW_PRESS:
+			default:
+				m_KeyFlags[key] = true;
+				m_KeyReleaseFlags[key] = false;
+				m_KeyDownFlags[key] = false;
+				break;
+			case GLFW_RELEASE:
+				m_KeyFlags[key] = false;
+				m_KeyReleaseFlags[key] = true;
+				m_lastKeyReleased = key;
+				m_KeyDownFlags[key] = false;
+				break;
+			case GLFW_REPEAT:
+				m_KeyFlags[key] = false;
+				m_KeyReleaseFlags[key] = false;
+				m_KeyDownFlags[key] = true;
+				break;
+			
+
+			}
 		}
 
 		void InputManager::__mouseButtonCallBack(GLFWwindow* window, int button, int action, int mods)
 		{
-			
+			switch (action)
+			{
+			case GLFW_PRESS:
+			default:
+				m_MouseButtonFlags[button] = true;
+				m_MouseButtonUpFlags[button] = false;
+				m_MouseButtonDownFlags[button] = false;
+				break;
+			case GLFW_RELEASE:
+				m_KeyFlags[button] = false;
+				m_KeyReleaseFlags[button] = true;
+				m_lastKeyReleased = button;
+				m_KeyDownFlags[button] = false;
+				break;
+			case GLFW_REPEAT:
+				m_KeyFlags[button] = false;
+				m_KeyReleaseFlags[button] = false;
+				m_KeyDownFlags[button] = true;
+				break;
+			}
 		}
 
 		void InputManager::__mouseScrollCallBack(GLFWwindow* window, double xOffset, double yOffset)
 		{
 			m_scrollYOffset = yOffset;
 			m_scrollXOffset = xOffset;
-
 		}
 
 		void InputManager::__cursorPosCallBack(GLFWwindow* window, double xPos, double yPos)
 		{
 
 			m_MouseX = xPos;
-			m_MouseY = /*CoreDrivers::Screen::ScreenHeight - */yPos;
+			m_MouseY = yPos;
 
 			m_DeltaX = m_MouseX - m_mouseLastX;
 			m_DeltaY = m_MouseY - m_mouseLastY;
 
 			m_mouseLastX = m_MouseX;
 			m_mouseLastY = m_MouseY;
-			//if (!_isCursorCentered()) {
-			//	//double movedDistanceX;
-			//	//double movedDistanceY;
-			//	////  the distance (old position - new position)
-			//	//// in other words:  how far is the mouse from the center of the window ? The bigger this value, the more we want to turn.
-			//	//// note that the old position (x_old, y_old) is fixed in this application (x_old = WindoSizeWidth/2, y_old = WindowSizeHeight/2)
-			//	//movedDistanceX = double(m_Window->GetWidth() / 2 - m_MouseX)*m_MouseDeltaMultiplier;
-			//	//movedDistanceY = double(m_Window->GetHeight() / 2 - m_MouseY)*m_MouseDeltaMultiplier;
-			//	//// Pass the two distances to the Renderer (our drawings)
-			//	//m_DeltaX = movedDistanceX;
-			//	//m_DeltaY = movedDistanceY;
-			//	//Force the new position of the mouse to be in the middle of the window
-			//	if (m_CursorLocked) {
-			//		_centerCursor();
-			//		
-			//	}
-			//}
+		
+		}
+		void InputManager::ClearStates()
+		{
+			m_KeyReleaseFlags.clear();
 		}
 		void InputManager::_centerCursor()
 		{

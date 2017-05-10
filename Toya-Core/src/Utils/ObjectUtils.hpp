@@ -1,5 +1,5 @@
 #pragma once
-#include "Scenes/Scene.hpp"
+#include "../Scenes/Scene.hpp"
 
 namespace Toya
 {
@@ -13,4 +13,15 @@ namespace Toya
 		}
 		return nullptr;
 	}
+
+	inline void Destroy(Components::GameObject* object)
+	{
+		/*****************************************************************************************/
+		//1- Collision
+		CoreDrivers::CollisionManager::UnregisterObject(object->transform);
+		//2- Renderer
+		SceneManagement::Scene::activeScene->UnregisterObject(object->transform);
+		/****************************************************************************************/
+	}
+	
 }

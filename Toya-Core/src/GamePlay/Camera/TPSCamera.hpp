@@ -29,7 +29,14 @@ namespace GamePlay
 					if (obj != nullptr)
 					{
 						target = obj->transform;
-						Camera::main->overwriteTarget = true;
+						if (enabled) 
+						{
+						
+							Camera::main->overwriteTarget = true;
+							Camera::main->transform->Position = target->Position - (Camera::main->GetLookDirection() * Distance);
+							Camera::main->transform->Position.y += Height;
+							Camera::main->LookTarget = (target);// ->Position);
+						}
 					}
 				}
 				else {
@@ -39,34 +46,43 @@ namespace GamePlay
 			}
 			else
 			{
-				Toya::Components::Camera::main->overwriteTarget = true;
+				if (enabled) {
+					Toya::Components::Camera::main->overwriteTarget = true;
+					Camera::main->transform->Position = target->Position - (Camera::main->GetLookDirection() * Distance);
+					Camera::main->transform->Position.y += Height;
+					Camera::main->LookTarget = (target);
+				}
 			}
+
+		}
+
+		void OnEnable() override{
+
+			Camera::main->overwriteTarget = true;
+			Camera::main->LookTarget = (target);
+			
+			Camera::main->Yaw = 90.0f;
+			Camera::main->Pitch = 0.0f;
+
+			Camera::main->UpdateViewMatrix();
+
+			Camera::main->transform->Position = target->Position - (Camera::main->GetLookDirection() * Distance);
+			Camera::main->transform->Position.y += Height;
 		}
 		void Update() override{
-			Camera::main->LookTarget = -(target->Position);
-			auto pitch = glm::radians(Camera::main->GetPitch());
-			auto yaw = glm::radians(Camera::main->GetYaw());
-			auto cosPitch = glm::cos(pitch);
-			auto sinPitch = glm::sin(pitch);
-			auto cosYaw = glm::cos(yaw);
-			auto sinYaw = glm::sin(yaw);
-			
-			auto offset = glm::vec3((Distance)* cosPitch * sinYaw, (Height)* sinPitch, (Distance)*cosYaw* sinPitch);
-			Camera::main->transform->Position = 2.0f * (target->Position  + Camera::main->GetLookDirection());
-			if (InputManager::GetKey(KeyCode::G))
-			{
-				Height += 10;
-				fprintf(stdout, "Height Increased %f.\n",Height);
-			}
-			
-			//glm::vec3((target->Position.x + Distance) * glm::cos(Camera::main->GetPitch()) * glm::sin(Camera::main->GetYaw()), (target->Position.y +Height)   * glm::sin(Camera::main->GetPitch()), (target->Position.z + Distance)  * glm::cos(Camera::main->GetYaw()) * glm::sin(Camera::main->GetPitch()));
-				
-			/*if (InputManager::GetKey(KeyCode::Alpha5))
-			{
-				auto pos = Camera::main->transform->Position;
-				auto pos2 = target->Position;
-				fprintf(stdout, "CAMERA : %f,%f,%f -- TARGET : %f,%f,%f\n", pos.x, pos.y, pos.z, pos2.x, pos2.y, pos2.z);
-			}*/
+
+			//T = P + D
+			Camera::main->transform->Position = target->Position - (Camera::main->GetLookDirection() * Distance);
+			Camera::main->transform->Position.y += Height;
+
+			if (InputManager::GetKey(KeyCode::PadAdd))
+				Height += 2;
+			else if (InputManager::GetKey(KeyCode::PadSubtract))
+				Height -= 2;
+			if (InputManager::GetKey(KeyCode::PadDivide))
+				Distance -= 2;
+			else if (InputManager::GetKey(KeyCode::PadMultiply))
+				Distance += 2;
 		}
 	};
 }

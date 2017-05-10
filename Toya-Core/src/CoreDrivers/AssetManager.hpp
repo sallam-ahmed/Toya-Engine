@@ -1,26 +1,28 @@
 #pragma once
-#include "../Components/Mesh.hpp"
-#include "assimp/Importer.hpp"
-#include "assimp/scene.h"
-#include "assimp/postprocess.h"
-using namespace Assimp;
+#include "Base/IManager.hpp"
+#include <string>
+
 namespace Toya
 {
 	namespace CoreDrivers
 	{
-		class AssetManager
+#define RSC_PATH "Resources/"
+		class AssetManager : public IManager
 		{
-			static Importer m_AssetImporter;
-			 const aiScene *m_AssetScene;
-
 		public:
 			AssetManager() = default;
-			static Components::Mesh* LoadMesh(std::string filePath,unsigned loadFlags)
-			{
+
+			static std::string ResourcesPath;
+			static std::string dataPath;
+			void Init() override{
+				ResourcesPath = RSC_PATH;
+			}
+			void Update() override{
 
 			}
+			AssetManager* GetInstance() override{
+				return new AssetManager();
+			}
 		};
-		Importer AssetManager::m_AssetImporter;
-		//aiScene *AssetManager::m_AssetScene;
 	}
 }

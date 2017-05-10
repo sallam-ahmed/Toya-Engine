@@ -1,0 +1,9 @@
+#skybox info file
+ext='.png'
+#images
+up='up'
+down='down'
+left='left'
+right='right'
+front='front'
+back='back'

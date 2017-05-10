@@ -9,6 +9,8 @@
 #include <vector>
 #include "Mesh.hpp"
 #include "../Graphics/Textures/TextureLoader.hpp"
+#include "Camera.hpp"
+
 
 namespace Toya
 {
@@ -16,34 +18,47 @@ namespace Toya
 	{
 #define DEFAULT_MODEL_VERT_SHADER "Shaders/Default/ModelDefVertShader.glsl"
 #define DEFAULT_MODEL_FRAG_SHADER "Shaders/Default/ModelDefFragShader.glsl"
+
+#define PRIMTIVE_CUBE_OBJ "res/Primitives/primitive_cube.obj"
+#define PRIMTIVE_SPHERE_OBJ "res/Primitives/primitive_sphere.obj"
+
 		class Model : public Component
 		{
+
 		private:
 			Shader* modelShader;
+			bool m_isPrimitive;
+		
 		public:
 			Texture2D* modelTexture;
 			Model() = default;
-			Model(GLchar* filePath,bool unloadShader = false)
+			Model(GLchar* filePath,bool useDefaults = false)
 			{
-				if(!unloadShader)
-					modelShader = new Shader(DEFAULT_MODEL_VERT_SHADER, DEFAULT_MODEL_FRAG_SHADER);
-
-				m_UnifyShader = false;
+				if (!useDefaults)
+					modelShader = ShaderManager::LoadShader(DEFAULT_MODEL_VERT_SHADER, DEFAULT_MODEL_FRAG_SHADER);
+				else
+				{
+					m_isPrimitive = true;
+					modelShader = ShaderManager::DefaultModelShader;
+				}
 				Model::_loadModel(filePath);
 			}
 			void Render()
 			{
 				if (m_useUnifiedTexture)
-					RenderOne(modelShader, modelTexture);
+				{
+					if (m_isPrimitive)
+						RenderOne(ShaderManager::DefaultModelShader, modelTexture);
+					else
+						RenderOne(modelShader, modelTexture);
+				}
 				else
 				{
 					Render(modelShader);
-
 				}
 			}
 			void BindShader(Shader* shader)
 			{
-				m_UnifyShader = true;
 				modelShader = shader;
 			}
 			void Render(Texture2D* tex)
@@ -52,28 +67,40 @@ namespace Toya
 			}
 			void Render(Graphics::Shader* shader)
 			{
-			   	shader->Enable();
+				if (!m_isPrimitive)
+				{
+					shader->Enable();
+				}
+				else
+				{
+					ShaderManager::DrawPrimitive();
+				}
+
 				shader->SetUniformMat4("_modelMatrix", this->transform->GetModelMatrix());
-				shader->SetUniformMat4("_projectionMatrix", Camera::main->GetProjcetionMatrix());
-			    shader->SetUniformMat4("_viewMatrix", Camera::main->GetWorldToViewMatrix());
+				shader->SetUniformMat4("_projectionMatrix", *Camera::main->GetProjcetionMatrix());
+			    shader->SetUniformMat4("_viewMatrix", *Camera::main->GetWorldToViewMatrix());
 
 				for (auto mesh : meshes)
 					mesh.Draw(shader);
 			}
 			void RenderOne(Graphics::Shader* shader, Texture2D* tex = nullptr)
 			{
-				if(!m_UnifyShader)
+				if (!m_isPrimitive)
+				{
 					shader->Enable();
+				}
+				else
+				{
+					ShaderManager::DrawPrimitive();
+				}
 				shader->SetUniformMat4("_modelMatrix", this->transform->GetModelMatrix());
-				shader->SetUniformMat4("_projectionMatrix", Camera::main->GetProjcetionMatrix());
-				shader->SetUniformMat4("_viewMatrix", Camera::main->GetWorldToViewMatrix());
+				shader->SetUniformMat4("_projectionMatrix", *Camera::main->GetProjcetionMatrix());
+				shader->SetUniformMat4("_viewMatrix", *Camera::main->GetWorldToViewMatrix());
 
 				for (auto mesh : meshes)
 				{
 					mesh.DrawOneTexture(shader,tex);
 				}
-					
-
 			}
 			void BindTexture(Texture2D* texture2_d)
 			{
@@ -81,8 +108,13 @@ namespace Toya
 				this->modelTexture = texture2_d;
 			}
 			std::vector<Mesh> meshes;
+
+			inline void SetPrimitiveState(bool state)
+			{
+				m_isPrimitive = state;
+			}
 		protected:
-			bool m_UnifyShader = false;
+
 			bool m_useUnifiedTexture;
 			std::vector<Texture2D> textures_loaded;
 			std::string directory;
@@ -104,7 +136,7 @@ namespace Toya
 				for (GLuint i = 0; i < node->mNumMeshes; i++)
 				{
 					auto mesh = scene->mMeshes[node->mMeshes[i]];
-					fprintf(stdout, "Processed Mesh %d \n", i);
+					//fprintf(stdout, "Processed Mesh %d \n", i);
 					this->meshes.push_back(this->_processMesh(mesh, scene));
 				}
 				//Process children too
@@ -200,5 +232,6 @@ namespace Toya
 				return textures;
 			}
 		};
+
 	}
 }

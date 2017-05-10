@@ -9,8 +9,13 @@ namespace Toya
 	namespace Graphics
 	{
 		bool Shader::m_Initialized = false;
+		/*******************************************************************/
 		std::map<GLuint, GLchar*> ShaderManager::shaderMap;
 		Shader* ShaderManager::m_ActiveShader;
+		Shader* ShaderManager::DefaultModelShader;
+		Texture2D* ShaderManager::DefaultTexture;
+		std::map<size_t, Shader*> ShaderManager::m_ShaderBank;
+		/***********************************************************************/
 
 		Shader::Shader(const char* vertexShader, const char* fragemntShader) 
 		:m_VertexShaderPath(vertexShader), m_FragShaderPath(fragemntShader)
@@ -51,12 +56,11 @@ namespace Toya
 			//err = glGetError(); if (err != GL_NO_ERROR)fprintf(stderr, "ERROR AFTER-> %u\n", err);
 			return m;
 		}
-		void Shader::SetUniformMat4(const GLchar* name, const Math::Matrix4x4 mat)const
+		void Shader::SetUniformMat4(const GLchar* name, const glm::mat4& mat)const
 		{
-			//GLenum err = glGetError(); if (err != GL_NO_ERROR)fprintf(stderr, "ERROR FROM MAT-> %u\n", err);
+
 			auto n = _getUniformLocation(name);
-			glUniformMatrix4fv(n, 1, GL_FALSE,mat.GetElements());
-			//err = glGetError(); if (err != GL_NO_ERROR)fprintf(stderr, "ERROR MAT AFTER-> %u\n", err);
+			glUniformMatrix4fv(n, 1, GL_FALSE,glm::value_ptr(mat));
 		}
 
 		void Shader::SetUniform1f(const GLchar* name, const float value)const
@@ -82,6 +86,11 @@ namespace Toya
 		void Shader::SetUniform1i(const GLchar* name, const GLint value) const
 		{
 			glUniform1i(_getUniformLocation(name), value);
+		}
+
+		void Shader::SetUniformBool(const GLchar* name, const bool value) const
+		{
+			glUniform1i(_getUniformLocation(name), value ? 1 : 0);
 		}
 
 		GLuint Shader::_loadShader() const
@@ -123,6 +132,7 @@ namespace Toya
 				glGetShaderInfoLog(fragmentShader, length, &length, &error[0]);
 				fprintf(stderr, "Failed to compile and run Fragment Shader\n %s\n", &error[0]);
 				glDeleteShader(fragmentShader);
+				system("pause");
 				return 0;
 			}
 

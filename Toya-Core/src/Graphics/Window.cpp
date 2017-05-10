@@ -2,7 +2,7 @@
 #include "../CoreDrivers/Time.hpp"
 #include "../CoreDrivers/Screen.hpp"
 #include "../Components/Camera.hpp"
-
+#include "../Input/InputManager.hpp"
 
 
 namespace Toya
@@ -78,6 +78,8 @@ namespace Toya
 
 		void Window::Update(void update_function()) const
 		{
+			Input::InputManager::ClearStates();
+
 			glfwPollEvents();
 			glfwSwapBuffers(m_Window);
 			glMatrixMode(GL_MODELVIEW);
@@ -95,6 +97,7 @@ namespace Toya
 		
 
 			update_function();
+
 		/*	glBindVertexArray(vao);
 			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 			glDrawArrays(GL_LINES, 0, 18);*/
@@ -118,7 +121,7 @@ namespace Toya
 			{
 				fprintf(stdout, "Initialized GLFW.\n");
 			}
-			m_Window = glfwCreateWindow(m_Width, m_Height, m_Title, NULL, NULL);
+			m_Window = glfwCreateWindow(m_Width, m_Height, m_Title,NULL, NULL);
 			if (!m_Window)
 			{
 				glfwTerminate();
@@ -138,12 +141,15 @@ namespace Toya
 				fprintf(stdout, "Initialized GLEW.\n");
 			}
 			glfwWindowHint(GLFW_SAMPLES, 4);
-			glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3); //OpenGL version 3.
-			glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3); // 3.3
-			glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE); //If requesting an OpenGL version below 3.2, GLFW_OPENGL_ANY_PROFILE
+			glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+			glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3); 
+			glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE); 
+			glEnable(GL_MULTISAMPLE);
 			glewExperimental = true; // Needed for core profile
 
 			// Enable depth test
+			glEnable(GL_BLEND);
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 			glEnable(GL_DEPTH_TEST);
 
@@ -181,6 +187,8 @@ namespace Toya
 
 			glEnable(GL_CULL_FACE);
 			glCullFace(GL_BACK);
+			
+			glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
 			return true;
 

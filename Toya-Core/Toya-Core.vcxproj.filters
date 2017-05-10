@@ -69,6 +69,18 @@
     <ClCompile Include="src\Behaviours\MazeGenerator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\CollisionManagment\CollisionManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Graphics\Textures\TextureLoader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Graphics\Renderers\TextRenderer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\CoreDrivers\AudioSource.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Graphics\Window.hpp">
@@ -158,19 +170,10 @@
     <ClInclude Include="src\Scenes\Scene.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Graphics\Lighting\Lighting.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\CoreDrivers\RenderDriver.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Components\Base\RenderableComponent.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Graphics\Lighting\DirectionalLight.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Graphics\Lighting\Light.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Components\FPSCameraController.hpp">
@@ -227,25 +230,52 @@
     <ClInclude Include="src\GamePlay\PlayerBehaviour.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\GamePlay\Camera\TPSCamera.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\CollisionManagment\BoxCollider.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\Math\AABB.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Utils\ObjectUtils.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\GamePlay\Camera\FPSCamera.hpp">
+    <ClInclude Include="src\GamePlay\SimpleRoomGenerator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\CollisionManagment\CollisionManager.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Components\BoxCollider.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GamePlay\PacPoint.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GamePlay\PointLight.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GamePlay\DirectionalLight.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GamePlay\Light.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Graphics\Renderers\TextRenderer.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\CoreDrivers\AudioSource.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\CoreDrivers\Base\IManager.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\GamePlay\Camera\CameraController.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\GamePlay\SimpleRoomGenerator.h">
+    <ClInclude Include="src\GamePlay\Camera\FPSCamera.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GamePlay\Camera\OrbitCamera.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GamePlay\Camera\TPSCamera.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -255,12 +285,14 @@
     <None Include="Shaders\SkyBox\SkyBoxFragShader.glsl" />
     <None Include="Shaders\SkyBox\SkyBoxVertShader.glsl" />
     <None Include="Shaders\Default\FragmentShader.glsl" />
-    <None Include="Shaders\Default\VertexShader.glsl" />
     <None Include="Shaders\LightShaders\LightEnabledVertexShader.glsl" />
     <None Include="Shaders\LightShaders\LightEnabledFragmentShader.glsl" />
     <None Include="Shaders\MaterialShader\VertexShader.glsl" />
     <None Include="Shaders\MaterialShader\FragementShader.glsl" />
     <None Include="Shaders\Default\ModelDefVertShader.glsl" />
     <None Include="Shaders\Default\ModelDefFragShader.glsl" />
+    <None Include="Shaders\Default\TextVertShader.glsl" />
+    <None Include="Shaders\Default\TextFragShader.glsl" />
+    <None Include="Shaders\Default\VertexShader.glsl" />
   </ItemGroup>
 </Project>

@@ -24,7 +24,7 @@ namespace Toya
 			Material()
 			{
 				Shininess = 1.0f;
-				ActiveShader = new Shader(VertexShader, FragmentShader);
+				ActiveShader = ShaderManager::LoadShader(VertexShader, FragmentShader);
 			}
 		};
 	}

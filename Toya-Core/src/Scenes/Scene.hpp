@@ -1,6 +1,7 @@
 #pragma once
-#include "../Graphics/Lighting/Lighting.hpp"
 #include "../CoreDrivers/RenderDriver.hpp"
+#include "../CollisionManagment/CollisionManager.hpp"
+#include "../Components/BoxCollider.hpp"
 
 namespace Toya
 {
@@ -8,19 +9,10 @@ namespace Toya
 	{
 
 		using namespace Toya::CoreDrivers;
-		class CollidableMesh : public Components::Transform
-		{
-			
-		};
-		class CollisionManager
-		{
-		public:
-			static void CheckCollision(std::vector<CollidableMesh*> vec);
-		};
 		class Scene
 		{
 		private:
-			std::vector<CollidableMesh*> m_ScenePhysicsListeners;
+			std::vector<Components::Model*> m_ScenePhysicsListeners;
 			std::vector<Components::Model*> m_SceneRenderModels;
 			std::vector<Components::GameObject*>m_RunTimeObjects;
 		public:
@@ -35,9 +27,21 @@ namespace Toya
 					activeScene = this;
 				}
 			}
+
+			inline void UnregisterObject(Components::Transform* obj)
+			{
+				for (int i = 0; i < m_SceneRenderModels.size(); i++)
+				{
+					if (obj == m_SceneRenderModels[i]->transform)
+					{
+						m_SceneRenderModels.erase(m_SceneRenderModels.begin() + i);
+						return;
+					}
+				}
+			}
 			glm::vec3 WorldUp = glm::vec3(0, 1, 0);
 			void SceneStart()
-			{ 
+			{
 				//Light Initialize here
 				Input::InputManager::SetCursorLockState(Input::LockState::Locked);
 				RenderManager::RenderInitialize();;
@@ -52,53 +56,35 @@ namespace Toya
 					auto mdl = SceneObjects[i]->transform->GetComponent<Components::Model>();
 					
 					if (mdl != nullptr)
+					{
+						//fprintf(stdout, "Added Model to vector \n");
 						m_SceneRenderModels.push_back(mdl);
-				}
-				//for(auto col : SceneObjects)
-				//{
-				//	/******************************************************/
-				//	for(auto b : col->transform->Behaviours)
-				//	{
-				//		b->Start();
-				//	}
-				//	/*****************************************************/
-				//	auto mdl = col->transform->GetComponent<Components::Model>();
-				//	if(mdl != nullptr)
-				//	{
-				//		m_SceneRenderModels.push_back(mdl);
-				//	}
-				//	/*****************************************************/
-				//}
+					}
 
-				//for (auto rObj : m_RunTimeObjects)
-				//{
-				//	for (auto b : rObj->transform->Behaviours)
-				//	{
-				//		b->Start();
-				//	}
-				//	/*****************************************************/
-				//	auto mdl = rObj->transform->GetComponent<Components::Model>();
-				//	if (mdl != nullptr)
-				//	{
-				//		m_SceneRenderModels.push_back(mdl);
-				//	}
-				//}
+					auto col = SceneObjects[i]->transform->GetComponent<Components::BoxCollider>();
+					if (col != nullptr)
+						CollisionManager::AddListener(col->transform);
+				}
+				
+			}
+
+			inline std::vector<Components::Model*> GetSceneRenderModels()
+			{
+				return m_SceneRenderModels;
 			}
 			void SceneUpdate() const
 			{
 				//Input reading
-				//Render Drawing
-				RenderManager::RenderUpdateLoop(m_SceneRenderModels);
 				for (auto col : SceneObjects)
 				{
 					for (auto b : col->transform->Behaviours)
 					{
-						//fprintf(stdout, "Updating Behavior of %s\n", b->transform->gameObject->name);
 						if(b->enabled)
 							b->Update();
 					}
 				}
-				//Collision Detection			
+				//Render Drawing
+				RenderManager::RenderUpdateLoop(m_SceneRenderModels);
 			}
 			void SceneEnd() const
 			{
@@ -111,13 +97,10 @@ namespace Toya
 				SceneEnd();
 			}
 			std::vector<Components::GameObject*> SceneObjects;
-			Graphics::Lighting::LightManager* SceneLightManager;
-
 			Components::GameObject* AddObject(Components::GameObject* obj)
 			{
 				m_RunTimeObjects.push_back(obj);
 			}
-
 		};
 		Scene* Scene::activeScene;
 

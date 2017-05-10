@@ -71,30 +71,21 @@ namespace Toya
 		}
 		GLfloat* Matrix4x4::GetElements() const
 		{
-
 			return m_data;
 		}
 
 		Matrix4x4::Matrix4x4(glm::mat4 mat)
 		{
+			if (m_glmMatrix != nullptr)
+				delete m_glmMatrix;
+
 			m_glmMatrix = new glm::mat4(mat);
-
-			/*	for(int i = 0 ; i < 4; i++)
-			{
-			for (int j = 0 ; j < 4; j ++)
-			{
-			fprintf(stdout, "Matrix [%d][%d] = %f\n", i, j, mat[i][j]);
-			}
-			}*/
 			m_data = new GLfloat[16]{ 0.0f };
-
 			const float *pSource = (const float*)(glm::value_ptr(mat));
 			for (int i = 0; i < 16; ++i)
 			{
-				//fprintf(stdout, "VALUES : I = %d , PSOURCE = %f\n", i, pSource[i]);
 				m_data[i] = pSource[i];
 			}
-
 		}
 	}
 }

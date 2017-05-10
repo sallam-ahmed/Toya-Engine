@@ -1,6 +1,7 @@
 #pragma once
 #include <GLM/mat4x4.hpp>
 #include <GLEW/GL/glew.h>
+#include <memory>
 #include <GLM/gtc/type_ptr.hpp>
 
 namespace Toya

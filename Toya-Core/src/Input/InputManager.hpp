@@ -20,6 +20,19 @@ namespace Toya
 			//Arrows
 			RightArrow = GLFW_KEY_RIGHT,
 			LeftArrow,DownArrow,UpArrow,
+			Pad0 = GLFW_KEY_KP_0,
+			Pad1,Pad2,Pad3,Pad4,Pad5,Pad6,Pad7,Pad8,Pad9,
+			PadDecimal,
+			PadDivide,PadMultiply,
+			PadSubtract,PadAdd,
+			PadEnter,PadEqual,
+			LeftShift = GLFW_KEY_LEFT_SHIFT
+			,LeftCtrl,
+			LeftAlt,LeftSuper,
+			RightShift,RightCtrl,
+			RightAlt,RightSuper,
+			Menu,
+			Space = GLFW_KEY_SPACE,
 			//Enough So Far
 			Esc = GLFW_KEY_ESCAPE
 		};
@@ -59,6 +72,7 @@ namespace Toya
 
 			static double m_mouseLastX;
 			static double m_mouseLastY;
+			static int m_lastKeyReleased;
 
 		public:
 			inline static double GetMouseX()
@@ -103,6 +117,7 @@ namespace Toya
 			static void SetCursorLockState(LockState lockState);
 		
 			static void SetDeltaMultiplier(float mul);
+			static void ClearStates();
 		private:
 			bool _init() const;
 

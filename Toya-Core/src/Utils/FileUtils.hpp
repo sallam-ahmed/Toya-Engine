@@ -21,5 +21,13 @@ namespace Toya
 			delete data;
 			return result;
 		}
+
+		inline static size_t _hash(const char* str)
+		{
+			unsigned h = 0x71452F;
+			while (*str)
+				h = h * 101 + (unsigned)*str++;
+			return h;
+		}
 	}
 }
