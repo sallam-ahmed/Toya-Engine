@@ -13,7 +13,6 @@ namespace Toya
 		}
 		return nullptr;
 	}
-
 	inline void Destroy(Components::GameObject* object)
 	{
 		/*****************************************************************************************/
@@ -23,5 +22,11 @@ namespace Toya
 		SceneManagement::Scene::activeScene->UnregisterObject(object->transform);
 		/****************************************************************************************/
 	}
-	
+	inline Components::GameObject* CreateObject(char* _name)
+	{
+		Toya::Components::GameObject *obj = new Toya::Components::GameObject();
+		obj->name = _name;
+		Toya::SceneManagement::Scene::activeScene->SceneObjects.push_back(obj);
+		return obj;
+	}
 }

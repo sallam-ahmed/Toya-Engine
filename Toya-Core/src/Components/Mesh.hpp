@@ -63,17 +63,13 @@ using namespace Graphics;
 						ss << specularNr++;
 					number = ss.str();
 					shader->SetUniform1i((name + number).c_str(), i);
-			//		fprintf(stdout, "Activating texture of %u\n",textures[i].m_TextureId);
 					glBindTexture(GL_TEXTURE_2D, this->textures[i].m_TextureId);
 				}
-
-				//shader->SetUniform1f("material.shininess", 16.0f);
 
 				glBindVertexArray(this->VAO);
 				glDrawElements(GL_TRIANGLES, this->indices.size(), GL_UNSIGNED_INT, 0);
 				glBindVertexArray(0);
 
-				// Always good practice to set everything back to defaults once configured.
 				for (GLuint i = 0; i < this->textures.size(); i++)
 				{
 					glActiveTexture(GL_TEXTURE0 + i);
@@ -82,17 +78,22 @@ using namespace Graphics;
 #endif
 			}
 
-			void DrawOneTexture(Shader * shader,Texture2D *tex)
+			//TODO Render Material Instead
+			void DrawOneTexture(Shader * shader,Texture2D *tex,Texture2D* specular= nullptr) const
 			{
+				//TODO, Pass Material into Shader
 				shader->SetUniform1i("material.diffuse",0);
-				//TODO Add Specular Map
-				shader->SetUniform1f("material.shininess", 13.0f);
-				tex->Bind();
-				
-				//shader->SetUniform1f("material.shininess", 16.0f);
-				
+				if (specular != nullptr)
+					shader->SetUniform1i("material.specular", 1); //chng to 1
+				else
+					shader->SetUniform1i("material.specular", 0); // Rollback to Diffuse
+
+				shader->SetUniform1f("material.shininess", 13.0f); // TODO Get From Material
+				tex->Bind();//Material.Render
+				if (specular != nullptr)
+					specular->Bind(); 
 				glBindVertexArray(this->VAO);
-				glDrawElements(GL_TRIANGLES, this->indices.size(), GL_UNSIGNED_INT, 0);
+				glDrawElements(GL_TRIANGLES, this->indices.size(), GL_UNSIGNED_INT, BUFFER_OFFSET(0));
 				glBindVertexArray(0);
 			}
 		private:
@@ -128,7 +129,7 @@ using namespace Graphics;
 			{
 				m_VAO = new VertexArray();
 				m_VAO->Bind();
-				/*				*SUGGESTED VERTEX BUFFERING FORMAT*
+				/*				*SUGGESTED VERTEX BUFFERING FORMAT -- BATCHING*
 				 ************************ ONE BUFFER ********************************
 				 *	 POSITION		 NORMALS			COLOR		TEXTURE_MAPPING *
 				 *	X	Y	Z		X	Y	Z		R	G	B	A		U	V	    *

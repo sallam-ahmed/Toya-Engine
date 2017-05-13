@@ -11,6 +11,9 @@ namespace Toya
 			Component() = default;
 			virtual ~Component() {}
 			Transform* transform;
+			virtual void Start(){}
+			virtual void Update(){}
+			virtual void OnEnable(){}
 		};
 
 	}

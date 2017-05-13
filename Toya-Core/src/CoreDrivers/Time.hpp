@@ -13,12 +13,14 @@ namespace Toya{
 		static float m_Elapsed;
 		static float m_FpsTime;
 		static unsigned int m_FPS;
+		static bool m_ReportFPS;
 	public:
 		static double deltaTime;
 		static double CurrentTime();
 		static void UpdateTime(double pTime);
 		static float Elapsed();
 		static double FrameTime;
+		inline static void SetReportFPS(bool b) { m_ReportFPS = b; }
 		Time();
 		~Time();
 	};

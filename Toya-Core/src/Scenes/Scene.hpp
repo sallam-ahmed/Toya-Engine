@@ -16,6 +16,7 @@ namespace Toya
 			std::vector<Components::Model*> m_SceneRenderModels;
 			std::vector<Components::GameObject*>m_RunTimeObjects;
 		public:
+
 			static Scene* activeScene;
 			Scene()
 			{
@@ -74,6 +75,7 @@ namespace Toya
 			}
 			void SceneUpdate() const
 			{
+				
 				//Input reading
 				for (auto col : SceneObjects)
 				{
@@ -85,12 +87,11 @@ namespace Toya
 				}
 				//Render Drawing
 				RenderManager::RenderUpdateLoop(m_SceneRenderModels);
+				//TODO Update All Scene Collisions Here
 			}
 			void SceneEnd() const
 			{
-				//Destroy All Objects
-				//for (auto i : SceneObjects)
-				//	delete i;
+
 			}
 			~Scene()
 			{

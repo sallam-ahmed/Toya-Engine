@@ -2,10 +2,10 @@
 #include "../Input/InputManager.hpp"
 #include "../Components/Base/Transform.hpp"
 #include "../CoreDrivers/Time.hpp"
-#include "../GamePlay/Light.hpp"
+#include "../Components/Light/Light.hpp"
 #include "../CoreDrivers/Time.hpp"
 #include "../CoreDrivers/AudioSource.hpp"
-
+#include "../CoreDrivers/RenderDriver.hpp"
 
 
 #define HORIZONTAL_AXIS glm::vec3(0,0,1)
@@ -20,12 +20,15 @@ namespace GamePlay
 	class PlayerBehaviour : public Toya::Components::Behaviour
 	{
 		AudioSource* audioSource;
+		int collectedPacPoints;
 	public:
+		int PacPointsCount;
 		float MovementSpeed = 0.02f;
 		
 		inline void Start() override{
 			fprintf(stdout, "Player Behaviour Started.\n");
 			audioSource = transform->GetComponent<AudioSource>();
+			collectedPacPoints = 0;
 		}
 
 		inline void Update() override{
@@ -64,7 +67,15 @@ namespace GamePlay
 			}
 			if (InputManager::GetKeyUp(KeyCode::A))
 				audioSource->Stop();
-			
+			if(collectedPacPoints >= PacPointsCount / 3)
+			{
+				transform->GetComponent<Light>()->LightColor = Color::Green;
+			}
+			if (collectedPacPoints == PacPointsCount)
+			{
+				RenderManager::GameFinished = true;
+				fprintf(stdout, "Finished.\n");
+			}
 		}
 
 		inline void OnEnable() override{
@@ -73,12 +84,14 @@ namespace GamePlay
 			if (other->gameObject->tag == "Brick")
 				audioSource->PlayOnce(BRICK_SOUND);
 			else if (other->gameObject->tag == "PacPoint")
+			{
 				audioSource->Play(POINT_SOUND);
+				collectedPacPoints++;
+				fprintf(stdout, "Collected %d out of %d total PacPoints.", collectedPacPoints, PacPointsCount);
+			}
 
 		}
 		inline void OnCollisionExit(Toya::Components::Transform* other) override{
-			fprintf(stdout, "Collision Exit with %p.\n", other);
-
 		}
 	};
 }

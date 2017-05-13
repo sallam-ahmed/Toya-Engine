@@ -6,6 +6,8 @@ namespace Toya
 {
 	namespace Graphics
 	{
+		//TODO Reimplement
+#if 0
 #define MATERIAL_VERTEX_SHADER "Shaders/MaterialShader/VertexShader.glsl"
 #define MATERIAL_FRAGMENT_SHADER "Shaders/MaterialShader/FragmentShader.glsl"
 		struct Material
@@ -27,5 +29,7 @@ namespace Toya
 				ActiveShader = ShaderManager::LoadShader(VertexShader, FragmentShader);
 			}
 		};
+#endif
+
 	}
 }

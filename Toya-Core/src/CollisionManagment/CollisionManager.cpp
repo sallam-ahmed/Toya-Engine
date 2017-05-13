@@ -33,8 +33,7 @@ namespace Toya
 						{
 							auto behaviour = Collidables[i]->Behaviours[c];
 							behaviour->_onCollision(Collidables[j], true);
-							static_cast<Components::BoxCollider*>(behaviour->transform->GetComponent<Components::BoxCollider>())->Free = false;							fprintf(stdout, "t: %p.\n", behaviour->transform);
-							fprintf(stdout, "COLS %p.\n", boxCollider);
+							static_cast<Components::BoxCollider*>(behaviour->transform->GetComponent<Components::BoxCollider>())->Free = false;
 						}
 						/*for (Components::Behaviour* behaviour : Collidables[i]->Behaviours)
 						{
@@ -97,7 +96,6 @@ namespace Toya
 		}
 		void CollisionManager::UnregisterObject(Components::Transform* obj)
 		{
-			fprintf(stdout, "Unregistering object of address %p.\n", obj);
 			auto i = 0, c = 0;
 			for (i = 0; i < Collidables.size(); i++)
 			{

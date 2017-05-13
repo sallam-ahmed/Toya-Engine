@@ -14,10 +14,10 @@ namespace Toya
 #define TEXT_FRAG_SHADER "Shaders/Default/TextFragShader.glsl"
 		struct Character
 		{
-			GLuint TextureID;   // ID handle of the glyph texture
-			glm::ivec2 Size;    // Size of glyph
-			glm::ivec2 Bearing; // Offset from baseline to left/top of glyph
-			GLuint Advance;     // Horizontal offset to advance to next glyph
+			GLuint TextureID;   
+			glm::ivec2 Size;    
+			glm::ivec2 Bearing; 
+			GLuint Advance;     
 		};
 		class TextRenderer
 		{

@@ -49,7 +49,7 @@ void main(void)
 	v->init();
 	sp->BindTexture(TextureLoader::LoadTexture("res/Player/body.jpg", 0));
 	playerObject->transform->Attach(new GamePlay::PlayerBehaviour());
-	auto pointLight = static_cast<GamePlay::PointLight*>(playerObject->transform->Attach(new GamePlay::PointLight()));
+	auto pointLight = static_cast<GamePlay::PointLight*>(playerObject->transform->AddComponent(new GamePlay::PointLight()));
 	pointLight->LightColor = Color::Red;
 	playerObject->transform->AddComponent(new AudioSource(false));
 
@@ -65,7 +65,7 @@ void main(void)
 	
 	dirLight->transform->Position = glm::vec3(-3, 5, 0);
 	dirLight->transform->Rotate(glm::vec3(0, 1, 0), 45.0f);
-	dirLight->transform->Attach(new GamePlay::DirectionalLight());
+	dirLight->transform->AddComponent(new GamePlay::DirectionalLight());
 	
 	#pragma endregion
 	

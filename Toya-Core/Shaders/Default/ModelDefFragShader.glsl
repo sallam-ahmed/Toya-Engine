@@ -46,10 +46,10 @@ uniform vec4 ambientColor;
 
 uniform vec3 viewPos;
 
-uniform int isGray;
-
 
 uniform int LightCount;
+
+uniform int gray;
 /*Func Proto*/
 vec3 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir);
 vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir);
@@ -57,7 +57,7 @@ vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir);
 
 
 void main(){
-   
+  
     vec3 norm = normalize(fs_in.fragNormal);
     vec3 viewDir = normalize(viewPos - fs_in.fragPos.xyz);
     
@@ -65,31 +65,26 @@ void main(){
     
     for(int i = 0; i < LightCount; i++)
        result += CalcPointLight(pointLights[i], norm, fs_in.fragPos.xyz, viewDir);
-    
-    color = /*texture(material.diffuse,fs_in.TexCoords);//*/vec4(result, 1.0);
-	//if(isGray == 1)
-	//{
-	//float gray = (color.r+color.g+color.b)/3;
-	//color.r = gray;
-	//color.g = gray;
-	//color.b = gray;
-	//}
-	
+	if(gray == 0)
+	 color = vec4(result, 1.0);
+	 else
+		{
+			float g = (result.r + result.g + result.b) / 3;
+			color = vec4(g,g,g,1.0f);
+		}
 }
 
 vec3 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir){
-    vec3 final = vec3(1.0f,0.0f,1.0f);
-
     vec3 lightDir = normalize(-light.direction);
     // Diffuse shading
-    float diff = max(dot(normal, lightDir), 0.0);
+    float diff = max(dot(lightDir, normal),0.0f);
     // Specular shading
     vec3 reflectDir = reflect(-lightDir, normal);
-    float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
+    float spec = pow(max(dot(viewDir, reflectDir), 0.0f), material.shininess);
     // Combine results
     vec3 ambient  = ambientColor.xyz  * vec3(texture(material.diffuse, fs_in.TexCoords));
     vec3 diffuse  = (light.color.xyz   * light.dFactor) * diff * vec3(texture(material.diffuse, fs_in.TexCoords));
-    vec3 specular = (light.color.xyz   * light.sFactor) * spec * vec3(texture(material.diffuse, fs_in.TexCoords));
+    vec3 specular = (light.color.xyz   * light.sFactor) * spec * vec3(texture(material.specular, fs_in.TexCoords));
     return (ambient + diffuse + specular);
 }
 

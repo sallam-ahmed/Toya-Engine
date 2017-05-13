@@ -1,10 +1,7 @@
 #pragma once
 #include "MockBehaviour.hpp"
-#include "src/GamePlay/PlayerBehaviour.hpp"
-#include "src/GamePlay/Camera/TPSCamera.hpp"
-#include "src/GamePlay/Camera/FPSCamera.hpp"
-#include "src/GamePlay/Camera/CameraController.hpp"
-#include "src/GamePlay/SimpleRoomGenerator.h"
-
-#include "src/GamePlay/DirectionalLight.hpp"
-#include "src/GamePlay/PointLight.hpp"
+#include "../GamePlay/PlayerBehaviour.hpp"
+#include "../GamePlay/Camera/TPSCamera.hpp"
+#include "../GamePlay/Camera/FPSCamera.hpp"
+#include "../GamePlay/Camera/CameraController.hpp"
+#include "../GamePlay/SimpleRoomGenerator.h"

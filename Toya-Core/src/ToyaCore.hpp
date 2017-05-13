@@ -16,26 +16,13 @@
 #define LIGHT_VERT_SHADER "Shaders/LightShaders/LightEnabledVertexShader.glsl"
 #define LIGHT_FRAG_SHADER "Shaders/LightShaders/LightEnabledFragmentShader.glsl"
 
-inline Toya::Components::GameObject* CreateObject(char* _name)
-{
-	Toya::Components::GameObject *obj = new Toya::Components::GameObject();
-	obj->name = _name;
-	Toya::SceneManagement::Scene::activeScene->SceneObjects.push_back(obj);
-	return obj;
-}
-
-inline Toya::Components::GameObject* GetObject(char* _name)
-{
-	for (auto i : Toya::SceneManagement::Scene::activeScene->SceneObjects)
-	{
-		if (i->name == _name)
-			return i;
-	}
-	return nullptr;
-}
-
 inline void InitDefaults()
 {
 	Toya::ShaderManager::DefaultTexture = Toya::TextureLoader::LoadTexture(PRIMITIVE_DIFFUSE_TEXTURE, 0);
 	Toya::ShaderManager::DefaultModelShader = Toya::ShaderManager::LoadShader(DEFAULT_MODEL_VERT_SHADER, DEFAULT_MODEL_FRAG_SHADER);
+	/*fprintf(stdout, "\n\nEnable frame counter? 1-Yes\n2-No..\n");
+	int c;
+	scanf("%d", &c);*/
+	Toya::CoreDrivers::Time::SetReportFPS(true/*(c - 2)*/);
+
 }

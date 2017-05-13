@@ -11,11 +11,12 @@ namespace Toya {
 		float Time::m_CurrentTime;
 		float Time::m_StartTime;
 		double Time::FrameTime;
+		bool Time::m_ReportFPS;
+
 		double Time::CurrentTime()
 		{
 			return glfwGetTime();
 		}
-
 		void Time::UpdateTime(double pTime)
 		{
 			deltaTime = pTime;
@@ -24,7 +25,8 @@ namespace Toya {
 			{
 				m_FpsTime += 1.0f;
 				FrameTime = 1000.0f / static_cast<double>(m_FPS);
-				fprintf(stdout, "FPS %d\n", m_FPS);
+				if(m_ReportFPS)
+					fprintf(stdout, "FPS %d\n", m_FPS);
 				m_FPS = 0;
 			}
 		}
@@ -41,5 +43,6 @@ namespace Toya {
 		{
 			
 		}
+	
 	}
 }

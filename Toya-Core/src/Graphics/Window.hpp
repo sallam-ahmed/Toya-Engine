@@ -18,6 +18,7 @@ namespace Toya
 			static void _sizeCallBack(GLFWwindow* window, int width, int height);
 			GLuint vao;
 			GLuint vbo;
+		
 		public:
 			Window(const char* name, int width, int height);
 			Window();
@@ -30,6 +31,8 @@ namespace Toya
 			{
 				glfwSetWindowShouldClose(m_Window, 1);
 			}
+
+			
 
 			static Window* Main;
 			inline int GetWidth() const { return m_Width; }

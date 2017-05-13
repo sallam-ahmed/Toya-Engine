@@ -147,16 +147,12 @@
     <ClCompile Include="src\Graphics\Textures\TextureLoader.cpp" />
     <ClCompile Include="src\Graphics\Window.cpp" />
     <ClCompile Include="src\Input\InputManager.cpp" />
-    <ClCompile Include="src\Math\Matrix4x4.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Behaviours\Behaviours.h" />
     <ClInclude Include="src\Behaviours\MazeGenerator.hpp" />
     <ClInclude Include="src\Behaviours\MockBehaviour.hpp" />
     <ClInclude Include="src\CollisionManagment\CollisionManager.hpp" />
-    <ClInclude Include="src\Components\Base\BaseCamera.hpp" />
-    <ClInclude Include="src\Components\Base\Behaviour.hpp" />
-    <ClInclude Include="src\Components\Base\GameObject.hpp" />
     <ClInclude Include="src\Components\Base\RenderableComponent.hpp" />
     <ClInclude Include="src\Components\BoxCollider.hpp" />
     <ClInclude Include="src\Components\Camera.hpp" />
@@ -180,10 +176,10 @@
     <ClInclude Include="src\GamePlay\Camera\FPSCamera.hpp" />
     <ClInclude Include="src\GamePlay\Camera\OrbitCamera.hpp" />
     <ClInclude Include="src\GamePlay\Camera\TPSCamera.hpp" />
-    <ClInclude Include="src\GamePlay\DirectionalLight.hpp" />
-    <ClInclude Include="src\GamePlay\Light.hpp" />
+    <ClInclude Include="src\Components\Light\DirectionalLight.hpp" />
+    <ClInclude Include="src\Components\Light\Light.hpp" />
     <ClInclude Include="src\GamePlay\PacPoint.hpp" />
-    <ClInclude Include="src\GamePlay\PointLight.hpp" />
+    <ClInclude Include="src\Components\Light\PointLight.hpp" />
     <ClInclude Include="src\GamePlay\SimpleRoomGenerator.h" />
     <ClInclude Include="src\GamePlay\PlayerBehaviour.hpp" />
     <ClInclude Include="src\Graphics\Buffers\Buffer.hpp" />
@@ -209,7 +205,6 @@
     <ClInclude Include="src\Math\AABB.h" />
     <ClInclude Include="src\Math\Constants.hpp" />
     <ClInclude Include="src\Math\Math.hpp" />
-    <ClInclude Include="src\Math\Matrix4x4.hpp" />
     <ClInclude Include="src\Scenes\Scene.hpp" />
     <ClInclude Include="src\ToyaCore.hpp" />
     <ClInclude Include="src\Utils\FileUtils.hpp" />
