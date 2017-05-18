@@ -23,25 +23,25 @@ void _updateFunction(void)
 }
 void main(void)
 {
-	Window* window = new Window("Toya Engine - Simple PacMan CG-17",800,600);
+	Window* window = new Window("Toya Engine - Simple PacMan CG-17", 800, 600);
 	InputManager input_manager = InputManager(window);
-	
-	#pragma region Camera Init
+
+#pragma region Camera Init
 
 	auto MainCameraObject = CreateObject("Main Camera");
 
-	MainCameraObject->transform->Position = glm::vec3(2,5,10);
+	MainCameraObject->transform->Position = glm::vec3(2, 5, 10);
 	MainCameraObject->transform->AddComponent(new Camera(window, activeScene.WorldUp));
 	Camera::main->transform->Attach(new GamePlay::CameraController());
 	MainCameraObject->transform->AddComponent(new AudioSource());
-	
-	#pragma endregion
-	
-	#pragma region Player
-	
+
+#pragma endregion
+
+#pragma region Player
+
 	auto playerObject = CreateObject("Player");
-	
-	playerObject->transform->Position = glm::vec3(-3,0,0);
+
+	playerObject->transform->Position = glm::vec3(-3, 0, 0);
 	playerObject->transform->Scale = glm::vec3(1, 1, 1);
 	auto sp = static_cast<Model*>(playerObject->transform->AddComponent(new Model("res/Player/Player.obj")));
 	auto v = new BoxCollider();
@@ -53,21 +53,27 @@ void main(void)
 	pointLight->LightColor = Color::Red;
 	playerObject->transform->AddComponent(new AudioSource(false));
 
-	#pragma endregion
+#pragma endregion
 
-	#pragma region Maze Generator
+#pragma region Maze Generator
 	auto mazeController = CreateObject("MazeGenerator");
 	mazeController->transform->Attach(new GamePlay::SimpleMazeGenerator());
-	#pragma endregion
+#pragma endregion
 
-	#pragma region Light Sys
+#pragma region Light Sys
 	auto dirLight = CreateObject("Sun");
-	
+
 	dirLight->transform->Position = glm::vec3(-3, 5, 0);
 	dirLight->transform->Rotate(glm::vec3(0, 1, 0), 45.0f);
 	dirLight->transform->AddComponent(new GamePlay::DirectionalLight());
-	
-	#pragma endregion
+
+#pragma endregion
+	auto grass = CreateObject("grass");
+	grass->transform->Position = glm::vec3(2, 0, 3);
+	grass->transform->Scale = glm::vec3(2, 2, 2);
+	auto md = (Model*)grass->transform->AddComponent(new Model("res/Primitives/primitive_plane.obj"));
+	grass->transform->Rotate(glm::vec3(1, 0, 0), -90.0F);
+	md->BindTexture(TextureLoader::LoadTexture("res/textures/grass.png"));
 	
 #if BOX_TEST
 	/*****************************************************************/
