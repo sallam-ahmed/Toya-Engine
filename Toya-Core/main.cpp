@@ -50,7 +50,7 @@ void main(void)
 	sp->BindTexture(TextureLoader::LoadTexture("res/Player/body.jpg", 0));
 	playerObject->transform->Attach(new GamePlay::PlayerBehaviour());
 	auto pointLight = static_cast<GamePlay::PointLight*>(playerObject->transform->AddComponent(new GamePlay::PointLight()));
-	pointLight->LightColor = Color::Red;
+	pointLight->LightColor = Color(1, 0, 0, 1);
 	playerObject->transform->AddComponent(new AudioSource(false));
 
 #pragma endregion

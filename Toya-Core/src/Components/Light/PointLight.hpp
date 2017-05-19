@@ -11,7 +11,7 @@ namespace GamePlay
 		PointLight()
 		{
 			Toya::CoreDrivers::Lighting::RegisterLight(this);
-			LightColor = Toya::CoreDrivers::Color::Red;
+			LightColor = Toya::CoreDrivers::Color(1,0,0,1);
 
 			constF = 1.0f;
 			quadF = .032f;

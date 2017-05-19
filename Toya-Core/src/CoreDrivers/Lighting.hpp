@@ -53,7 +53,7 @@ namespace Toya
 			{
 				_lightCount = 0;
 				m_AmbientIntensityMultiplier = 1.0f;
-				AmbientColor = Color::Red;
+				AmbientColor = Color(1,0,0,1);
 			}
 
 			static void RegisterLight(GamePlay::Light* light)

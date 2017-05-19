@@ -132,6 +132,7 @@
     <ClCompile Include="src\Components\Base\BaseCamera.cpp" />
     <ClCompile Include="src\CoreDrivers\AudioSource.cpp" />
     <ClCompile Include="src\Graphics\Renderers\BatchRenderer2D.cpp" />
+    <ClCompile Include="src\Graphics\Renderers\Material.cpp" />
     <ClCompile Include="src\Graphics\Renderers\Simple2DRenderer.cpp" />
     <ClCompile Include="src\CoreDrivers\Screen.cpp" />
     <ClCompile Include="src\Components\Camera.cpp" />

@@ -8,11 +8,6 @@ namespace Toya
 		{
 			
 		public:
-			static Color Red	;
-			static Color Green	;
-			static Color Blue	;
-			static Color Pink;
-
 			float r, g, b, a;
 			glm::vec4 glm_color = glm::vec4(1, 0, 1, 1);
 			Color()
@@ -42,9 +37,5 @@ namespace Toya
 				return &glm_color;
 			}
 		};
-		Color Color::Pink   = Color(glm::vec4(.5f, 0, 0, 1));
-		Color Color::Red	= Color(glm::vec4(1, 0, 0, 1));
-		Color Color::Green	= Color(glm::vec4(0, 1, 0, 1));
-		Color Color::Blue	= Color(glm::vec4(0, 0, 1, 1));
 	}
 }

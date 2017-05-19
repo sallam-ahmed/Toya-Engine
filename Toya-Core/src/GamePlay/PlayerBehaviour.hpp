@@ -69,7 +69,7 @@ namespace GamePlay
 				audioSource->Stop();
 			if(collectedPacPoints >= PacPointsCount / 3)
 			{
-				transform->GetComponent<Light>()->LightColor = Color::Green;
+				transform->GetComponent<Light>()->LightColor = Color(0, 1, 0, 1);
 			}
 			if (collectedPacPoints == PacPointsCount)
 			{

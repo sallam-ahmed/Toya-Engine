@@ -1,6 +1,5 @@
 #include "Shader.hpp"
-#include <vector>
-#include <GLM/gtc/type_ptr.hpp>
+
 #define ERROR_CHECK GLenum err = glGetError();if(err!=GL_NO_ERROR)fprintf(stderr,"ERROR-> %u\n",err);
 
 

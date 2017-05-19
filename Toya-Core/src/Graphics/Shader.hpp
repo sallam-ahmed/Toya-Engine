@@ -1,12 +1,14 @@
 #pragma once
 #include <GLEW/GL/glew.h>
-#include "../Utils/FileUtils.hpp"
-#include "../Math/Math.hpp"
+#include <GLM/gtx/transform.hpp>
 #include <map>
+#include <vector>
+#include <GLM/gtc/type_ptr.hpp>
+#include "../Utils/FileUtils.hpp"
 #include "Textures/Texture2D.hpp"
 
 
-using namespace Toya::Math;
+//using namespace Toya::Math;
 
 using namespace Toya::Utils;
 namespace Toya
@@ -17,8 +19,10 @@ namespace Toya
 #define DEFAULT_MODEL_FRAG_SHADER "Shaders/Default/ModelDefFragShader.glsl"
 #define PRIMITIVE_DIFFUSE_TEXTURE "res/Primitives/primitive_diffuse.jpg"
 		class ShaderManager;
+		class Material;
 		class Shader
 		{
+			friend class Material;
 			friend class ShaderManager;
 		private:
 			const char *m_VertexShaderPath, *m_FragShaderPath;
@@ -85,6 +89,11 @@ namespace Toya
 						new Shader(vertShaderPath.c_str(), fragShaderPath.c_str());
 				
 				return m_ShaderBank[_getShaderHash(vertShaderPath, fragShaderPath)];
+			}
+			inline static Shader* LoadShader(std::string shaderKey)
+			{
+				//TODO Implement Shader Retrieval with Key
+				return nullptr;
 			}
 		private:
 			ShaderManager() = default;
