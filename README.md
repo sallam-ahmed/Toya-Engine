@@ -24,7 +24,13 @@
 **&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|<br>**
 **&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|---Shaders&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//Contains Shaders used within Toya-Engine<br>**
 
-***This is a Work In Progress Educational Purpose Project<br>***
+***This is an Educational Purpose Project<br>***
 <br>
+
+---
+**Releases:**
+- [Initial Version v0.1- Pre-Release](https://github.com/Ahmed-YehiaGPEL/Toya-Engine/releases/tag/0.1)<br>
+
+---
 **Contributors:<br>**
 * Ahmed Yehia
